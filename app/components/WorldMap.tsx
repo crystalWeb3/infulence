@@ -142,7 +142,7 @@ const WorldMap: React.FC = () => {
         .data(data.features)
         .join("path")
         .attr("class", "country")
-        .attr("d", pathGenerator)
+        .attr("d",(d: any) => pathGenerator(d)!)
         .attr("fill", "#e0e0e0")
         .attr("stroke", "#999");
 
