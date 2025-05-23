@@ -13,6 +13,7 @@ const WorldMap: React.FC = () => {
         coords: [-77.0369, 38.9072],
         data: [20.913, 25.679, 24.418, 25.601, 27.894],
         offset: [-20, 30],
+        color: "#3C3B6E",
       },
       {
         name: "UK",
@@ -20,6 +21,7 @@ const WorldMap: React.FC = () => {
         coords: [-0.1276, 51.5074],
         data: [9.155, 14.16, 11.152, 10.144, 9.079],
         offset: [-100, -90],
+        color: "#CF142B",
       },
       {
         name: "France",
@@ -27,6 +29,7 @@ const WorldMap: React.FC = () => {
         coords: [2.3522, 48.8566],
         data: [8.71, 16.855, 15.085, 13.231, 14.054],
         offset: [-100, 30],
+        color: "#0055A4",
       },
       {
         name: "Germany",
@@ -34,6 +37,7 @@ const WorldMap: React.FC = () => {
         coords: [13.405, 52.52],
         data: [5.732, 15.119, 14.101, 18.439, 17.321],
         offset: [20, 20],
+        color: "#000000",
       },
       {
         name: "Russia",
@@ -41,6 +45,7 @@ const WorldMap: React.FC = () => {
         coords: [37.6173, 55.7558],
         data: [5.791, 8.606, 5.18, 8.218, 8.906],
         offset: [20, -90],
+        color: "#3F6DB3",
       },
       {
         name: "China",
@@ -48,6 +53,7 @@ const WorldMap: React.FC = () => {
         coords: [116.4074, 39.9042],
         data: [0.156, 1.984, 3.558, 13.179, 19.623],
         offset: [-20, 30],
+        color: "#DE2910",
       },
     ];
 
@@ -57,7 +63,8 @@ const WorldMap: React.FC = () => {
       container: d3.Selection<SVGGElement, unknown, null, undefined>,
       data: number[],
       x: number,
-      y: number
+      y: number,
+      color: string
     ) => {
       const chartW = 100;
       const chartH = 60;
@@ -96,7 +103,7 @@ const WorldMap: React.FC = () => {
         .attr("y", (d) => yScale(d))
         .attr("width", xScale.bandwidth())
         .attr("height", (d) => chartH - yScale(d))
-        .attr("fill", "#6600ff");
+        .attr("fill", color);
 
       const yAxis = d3.axisLeft(yScale).ticks(3).tickSize(0);
       g.append("g")
@@ -169,7 +176,7 @@ const WorldMap: React.FC = () => {
       flags.forEach((country) => {
         const [x, y] = projection(country.coords as [number, number]) ?? [0, 0];
         const offset = country.offset as [number, number];
-        drawBarChart(zoomGroup, country.data, x + offset[0], y + offset[1]);
+        drawBarChart(zoomGroup, country.data, x + offset[0], y + offset[1], country.color);
       });
     });
 
