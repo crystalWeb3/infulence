@@ -11,10 +11,11 @@ export default function HomePage() {
   ];
   return (
     <>
-      
       <main className="relative z-10 max-w-screen-xl mx-auto p-4 w-full h-full">
-       
-        <div className="w-[400px] bg-[#f0f0f0] p-4 rounded-lg shadow-lg absolute left-[50%] translate-x-[-50%] bottom-[100px] z-10">
+        <div className="w-[400px] bg-[#f0f0f0] p-4 rounded-lg shadow-lg absolute left-[50%] translate-x-[-50%] bottom-[30px] z-10">
+          <h1 className="text-center color-black] shadow-sm mb-3" >
+            Influence of Major World Powers ( 1965–2023 )
+          </h1>          
           <div className="grid grid-cols-2 gap-2">
             {countries.map((country) => (
               <div
@@ -32,8 +33,6 @@ export default function HomePage() {
         </div>
         <WorldMap />
       </main>
-       
-      
     </>
   );
 }
