@@ -8,6 +8,7 @@ const NetworkGraph = dynamic(() => import('../components/NetworkGraph'), { ssr: 
 export default function GraphPage() {
   return (
     <div className="p-6">
+
       <NetworkGraph data={data} />
     </div>
   );
