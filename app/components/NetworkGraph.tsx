@@ -1,5 +1,6 @@
 "use client";
 import * as d3 from "d3";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 type InfluenceEntry = {
@@ -41,7 +42,7 @@ interface NetworkGraphProps {
 export default function NetworkGraph({ data }: NetworkGraphProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const [yearIndex, setYearIndex] = useState<number>(0);
-
+  const [progress, setProgress] = useState<number>(0);
   useEffect(() => {
     const width = 800;
     const height = 600;
@@ -89,7 +90,7 @@ export default function NetworkGraph({ data }: NetworkGraphProps) {
       });
 
       // Create links based on netVal
-     data.forEach((entry) => {
+      data.forEach((entry) => {
         const netKey = `net_${year}` as keyof InfluenceEntry;
         const netVal = entry[netKey] as number;
 
@@ -226,9 +227,16 @@ export default function NetworkGraph({ data }: NetworkGraphProps) {
     const interval = setInterval(() => {
       setYearIndex((prev) => (prev + 1) % YEARS.length);
     }, 10000);
-
+    let tickCount = 0;
+    const tickInterval = 100;
+    let totalTicks = Math.ceil(10000 / tickInterval);
+    const tickTimer = setInterval(() => {
+      tickCount++;
+      setProgress((tickCount / totalTicks) * 100);
+    }, tickInterval);
     return () => {
       clearInterval(interval);
+      clearInterval(tickTimer);
       tooltip.remove();
     };
   }, [yearIndex, data]);
@@ -253,11 +261,21 @@ export default function NetworkGraph({ data }: NetworkGraphProps) {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center">      
       <h2 className="text-xl mb-4">
         Network Diagram - Year: {YEARS[yearIndex]}
       </h2>
+      <div className="w-full max-w-[800px] h-2 bg-gray-300 rounded mb-2 overflow-hidden">
+        <div
+          className="h-full bg-blue-600 transition-all duration-100"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
       <svg ref={svgRef} width={800} height={600} />
+
+      <Link href={'/'}>
+        <div className="bg-[#f0f0f0] p-2 border-lg" >Back to Home</div>
+      </Link>
     </div>
   );
 }
