@@ -1,7 +1,7 @@
 [
   {
     "a_first":"China",
-    "a_seond":"France",
+    "a_second":"France",
     "a_1965":0.004,
     "a_1980":0.01,
     "a_1995":0.029,
@@ -24,7 +24,7 @@
   },
   {
     "a_first":"China",
-    "a_seond":"Germany",
+    "a_second":"Germany",
     "a_1965":0.002,
     "a_1980":0.017,
     "a_1995":0.038,
@@ -47,7 +47,7 @@
   },
   {
     "a_first":"China",
-    "a_seond":"Russian Federation",
+    "a_second":"Russian Federation",
     "a_1965":0.082,
     "a_1980":0.009,
     "a_1995":0.09,
@@ -70,7 +70,7 @@
   },
   {
     "a_first":"China",
-    "a_seond":"United Kingdom",
+    "a_second":"United Kingdom",
     "a_1965":0.005,
     "a_1980":0.007,
     "a_1995":0.014,
@@ -93,7 +93,7 @@
   },
   {
     "a_first":"China",
-    "a_seond":"United States of America",
+    "a_second":"United States of America",
     "a_1965":0.0,
     "a_1980":0.007,
     "a_1995":0.043,
@@ -116,7 +116,7 @@
   },
   {
     "a_first":"France",
-    "a_seond":"China",
+    "a_second":"China",
     "a_1965":0.016,
     "a_1980":0.115,
     "a_1995":0.155,
@@ -139,7 +139,7 @@
   },
   {
     "a_first":"France",
-    "a_seond":"Germany",
+    "a_second":"Germany",
     "a_1965":0.388,
     "a_1980":0.496,
     "a_1995":0.303,
@@ -162,7 +162,7 @@
   },
   {
     "a_first":"France",
-    "a_seond":"Russian Federation",
+    "a_second":"Russian Federation",
     "a_1965":0.013,
     "a_1980":0.026,
     "a_1995":0.026,
@@ -185,7 +185,7 @@
   },
   {
     "a_first":"France",
-    "a_seond":"United Kingdom",
+    "a_second":"United Kingdom",
     "a_1965":0.129,
     "a_1980":0.332,
     "a_1995":0.316,
@@ -208,7 +208,7 @@
   },
   {
     "a_first":"France",
-    "a_seond":"United States of America",
+    "a_second":"United States of America",
     "a_1965":0.179,
     "a_1980":0.139,
     "a_1995":0.131,
@@ -231,7 +231,7 @@
   },
   {
     "a_first":"Germany",
-    "a_seond":"China",
+    "a_second":"China",
     "a_1965":0.014,
     "a_1980":0.153,
     "a_1995":0.132,
@@ -254,7 +254,7 @@
   },
   {
     "a_first":"Germany",
-    "a_seond":"France",
+    "a_second":"France",
     "a_1965":0.352,
     "a_1980":0.528,
     "a_1995":0.359,
@@ -277,7 +277,7 @@
   },
   {
     "a_first":"Germany",
-    "a_seond":"Russian Federation",
+    "a_second":"Russian Federation",
     "a_1965":0.02,
     "a_1980":0.039,
     "a_1995":0.101,
@@ -300,7 +300,7 @@
   },
   {
     "a_first":"Germany",
-    "a_seond":"United Kingdom",
+    "a_second":"United Kingdom",
     "a_1965":0.107,
     "a_1980":0.304,
     "a_1995":0.328,
@@ -323,7 +323,7 @@
   },
   {
     "a_first":"Germany",
-    "a_seond":"United States of America",
+    "a_second":"United States of America",
     "a_1965":0.11,
     "a_1980":0.181,
     "a_1995":0.155,
@@ -346,7 +346,7 @@
   },
   {
     "a_first":"Russian Federation",
-    "a_seond":"China",
+    "a_second":"China",
     "a_1965":0.365,
     "a_1980":0.03,
     "a_1995":0.187,
@@ -369,7 +369,7 @@
   },
   {
     "a_first":"Russian Federation",
-    "a_seond":"France",
+    "a_second":"France",
     "a_1965":0.011,
     "a_1980":0.028,
     "a_1995":0.011,
@@ -392,7 +392,7 @@
   },
   {
     "a_first":"Russian Federation",
-    "a_seond":"Germany",
+    "a_second":"Germany",
     "a_1965":0.011,
     "a_1980":0.032,
     "a_1995":0.055,
@@ -415,7 +415,7 @@
   },
   {
     "a_first":"Russian Federation",
-    "a_seond":"United Kingdom",
+    "a_second":"United Kingdom",
     "a_1965":0.015,
     "a_1980":0.017,
     "a_1995":0.016,
@@ -438,7 +438,7 @@
   },
   {
     "a_first":"Russian Federation",
-    "a_seond":"United States of America",
+    "a_second":"United States of America",
     "a_1965":0.002,
     "a_1980":0.01,
     "a_1995":0.007,
@@ -461,7 +461,7 @@
   },
   {
     "a_first":"United Kingdom",
-    "a_seond":"China",
+    "a_second":"China",
     "a_1965":0.022,
     "a_1980":0.025,
     "a_1995":0.033,
@@ -484,7 +484,7 @@
   },
   {
     "a_first":"United Kingdom",
-    "a_seond":"France",
+    "a_second":"France",
     "a_1965":0.123,
     "a_1980":0.327,
     "a_1995":0.403,
@@ -507,7 +507,7 @@
   },
   {
     "a_first":"United Kingdom",
-    "a_seond":"Germany",
+    "a_second":"Germany",
     "a_1965":0.129,
     "a_1980":0.246,
     "a_1995":0.297,
@@ -530,7 +530,7 @@
   },
   {
     "a_first":"United Kingdom",
-    "a_seond":"Russian Federation",
+    "a_second":"Russian Federation",
     "a_1965":0.021,
     "a_1980":0.016,
     "a_1995":0.035,
@@ -553,7 +553,7 @@
   },
   {
     "a_first":"United Kingdom",
-    "a_seond":"United States of America",
+    "a_second":"United States of America",
     "a_1965":0.146,
     "a_1980":0.253,
     "a_1995":0.26,
@@ -576,7 +576,7 @@
   },
   {
     "a_first":"United States of America",
-    "a_seond":"China",
+    "a_second":"China",
     "a_1965":0.0,
     "a_1980":0.046,
     "a_1995":0.132,
@@ -599,7 +599,7 @@
   },
   {
     "a_first":"United States of America",
-    "a_seond":"France",
+    "a_second":"France",
     "a_1965":0.294,
     "a_1980":0.285,
     "a_1995":0.303,
@@ -622,7 +622,7 @@
   },
   {
     "a_first":"United States of America",
-    "a_seond":"Germany",
+    "a_second":"Germany",
     "a_1965":0.329,
     "a_1980":0.371,
     "a_1995":0.347,
@@ -645,7 +645,7 @@
   },
   {
     "a_first":"United States of America",
-    "a_seond":"Russian Federation",
+    "a_second":"Russian Federation",
     "a_1965":0.008,
     "a_1980":0.023,
     "a_1995":0.043,
@@ -668,7 +668,7 @@
   },
   {
     "a_first":"United States of America",
-    "a_seond":"United Kingdom",
+    "a_second":"United Kingdom",
     "a_1965":0.275,
     "a_1980":0.353,
     "a_1995":0.411,

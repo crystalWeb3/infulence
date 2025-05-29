@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 
 type InfluenceEntry = {
   a_first: string;
-  a_seond: string;
+  a_second: string;
   [key: `a_${string}` | `b_${string}` | `net_${string}`]: number | string;
 };
 
@@ -68,7 +68,7 @@ export default function NetworkGraph({ data, year }: NetworkGraphProps) {
       // Collect all nodes regardless of netVal
       data.forEach((entry) => {
         nodesSet.add(entry.a_first);
-        nodesSet.add(entry.a_seond);
+        nodesSet.add(entry.a_second);
       });
 
       // Create links based on netVal
@@ -76,8 +76,8 @@ export default function NetworkGraph({ data, year }: NetworkGraphProps) {
         const netKey = `net_${year}` as keyof InfluenceEntry;
         const netVal = entry[netKey] as number;
 
-        const source = netVal > 0 ? entry.a_first : entry.a_seond;
-        const target = netVal > 0 ? entry.a_seond : entry.a_first;
+        const source = netVal > 0 ? entry.a_first : entry.a_second;
+        const target = netVal > 0 ? entry.a_second : entry.a_first;
 
         let color =
           countryMap[source as keyof typeof countryMap]?.color || "#999";
