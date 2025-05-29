@@ -7,7 +7,7 @@ const YEARS = ["1965", "1980", "1995", "2010", "2023"];
 
 type InfluenceEntry = {
   a_first: string;
-  a_seond: string;
+  a_second: string;
   [key: `a_${string}` | `b_${string}` | `net_${string}`]: number | string;
 };
 
