@@ -41,6 +41,10 @@ export default function HomePage() {
 
           <Link href={"/network/all"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">All Networks</div>
+          </Link>   
+
+           <Link href={"/chord"}>
+            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">All Chords</div>
           </Link>          
         </div>
         <WorldMap />
