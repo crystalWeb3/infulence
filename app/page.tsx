@@ -36,16 +36,20 @@ export default function HomePage() {
 
         <div className="w-[200px] bg-[#a0a0a0] p-4 rounded-lg shadow-lg absolute left-[5%] bottom-[5%] translate-x-[-50%] bottom-[30px] z-10">
           <Link href={"/network"}>
-            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">Time Networks</div>
+            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">Power 6 Animation</div>
           </Link>
 
           <Link href={"/network/all"}>
-            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">All Networks</div>
+            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">Top 6 Countries</div>
           </Link>   
 
            <Link href={"/chord"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">All Chords</div>
-          </Link>          
+          </Link>
+
+          <Link href={"/network2"}>
+            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">All World's Network</div>
+          </Link>
         </div>
         <WorldMap />
       </main>
