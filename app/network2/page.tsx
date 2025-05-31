@@ -187,8 +187,8 @@ export default function InfluenceNetworkPage() {
           <option value="top">Top Countries</option>
           <option value="nato">Nato</option>
           <option value="brics">BRICS</option>
-          <option value="North America">North America</option>
-          <option value="South America">South America</option>
+          <option value="NorthAmerica">North America</option>
+          <option value="SouthAmerica">South America</option>
           <option value="Asia">Asia</option>
           <option value="Europe">Europe</option>
           <option value="Africa">Africa</option>
