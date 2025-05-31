@@ -71,6 +71,18 @@ export default function SankeyDiagram({ data, year }: Props) {
       (l) => nodeNames.includes(l.source) && nodeNames.includes(l.target)
     );
 
+    let flg: Record<string, boolean> = {};
+    let nonCircularLinks = [];
+    for(let i = 0; i < validLinks.length; i++) {
+      let key = `${validLinks[i].target}-${validLinks[i].source}`;
+
+      if(flg[key]) continue;
+      nonCircularLinks.push(validLinks[i]);
+      flg[`${validLinks[i].source}-${validLinks[i].target}`] = true;
+
+    }
+
+    console.log(nonCircularLinks)
     const sankeyGenerator = sankey<SankeyNodeType, SankeyLinkType>()
       .nodeWidth(20)
       .nodePadding(20)
@@ -84,7 +96,7 @@ export default function SankeyDiagram({ data, year }: Props) {
     try {
       sankeyData = sankeyGenerator({
         nodes: nodes.map((d) => ({ ...d })),
-        links: validLinks.map((d) => ({ ...d })),
+        links: nonCircularLinks.map((d) => ({ ...d })),
       });
     } catch (e) {
       console.error("Sankey layout error:", e);

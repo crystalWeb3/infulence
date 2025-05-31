@@ -15,6 +15,7 @@ import {
   getCountryGroup,
 } from "@/utils/getCountryGroup";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 export default function InfluenceNetworkPage() {
   const [type, setType] = useState("top");
@@ -150,11 +151,13 @@ export default function InfluenceNetworkPage() {
   }, [year, topNum, type, visibleLimit, net, colorStyle]);
 
   return (
-    <main className="p-4">
-      <h1 className="text-3xl font-bold mb-4">World Influence Network</h1>
-      <span>
+    <main>
+
+      <div className=" bg-[#a0a0a0] rounded-lg ml-3 p-1 shadow-lg absolute top-[10px] z-10">
+      
+      <span className="flex flex-wrap gap-2 items-center justify-center">
         <select
-          className="mb-4 p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-gray-500"
           onChange={(e) => setYear(e.target.value)}
         >
           <option value="2023">2023</option>
@@ -165,7 +168,7 @@ export default function InfluenceNetworkPage() {
         </select>
 
         <select
-          className="mb-4 p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-gray-500"
           onChange={(e) => setTopNum(e.target.value)}
         >
           <option value="10">10</option>
@@ -178,7 +181,7 @@ export default function InfluenceNetworkPage() {
         </select>
 
         <select
-          className="mb-4 p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-gray-500"
           onChange={(e) => setType(e.target.value)}
         >
           <option value="top">Top Countries</option>
@@ -193,7 +196,7 @@ export default function InfluenceNetworkPage() {
         </select>
 
         <select
-          className="mb-4 p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-gray-500"
           onChange={(e) => setNet(e.target.value)}
         >
           <option value="atob">Directed Dyadic Influence A</option>
@@ -202,7 +205,7 @@ export default function InfluenceNetworkPage() {
         </select>
 
         <select
-          className="mb-4 p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-gray-500"
           onChange={(e) => setColorStyle(e.target.value)}
         >
           <option value="continent">Continent</option>
@@ -211,14 +214,20 @@ export default function InfluenceNetworkPage() {
 
         <input
           type="number"
-          className="mb-4 p-2 rounded border border-gray-500"
+          className="p-2 rounded border border-gray-500 w-[100px]"
           placeholder="Visible Limit"
           value={visibleLimit}
           onChange={(e) => setVisibleLimit(Number(e.target.value))}
         />
 
-        <button className="bg-[#f0f0f0] p-2">Set</button>
+        <Link href = "/">
+        <span className="text-center bg-[#f0f0f0] p-2 rounded-lg">
+          Back to Home
+        </span>
+        </Link>
       </span>
+
+      </div>
       <div className="relative">
         <InfluenceNetworkGraph allview={type} nodes={nodes} links={links} />
       </div>
