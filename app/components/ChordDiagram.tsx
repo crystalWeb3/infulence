@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 interface InfluenceEntry {
   a_first: string;
   a_second: string;
-  [key: `a_${string}` | `b_${string}` | `net_${string}`]: number | string;
+  [key: `a_${string}` | `b_${string}` | `c_${string}`]: number | string;
 }
 
 interface Props {
@@ -61,7 +61,7 @@ export default function ChordDiagram({ data, year, type }: Props) {
 
       const aVal = Number(entry[`a_${year}`] ?? 0);
       const bVal = Number(entry[`b_${year}`] ?? 0);
-      const netVal = Number(entry[`net_${year}`] ?? 0);
+      const netVal = Number(entry[`c_${year}`] ?? 0);
 
       if (type === "a_to_b") {
         matrix[i][j] = aVal;

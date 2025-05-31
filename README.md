@@ -33,8 +33,8 @@ Edit
 {
   a_first: "Country A",
   a_seond: "Country B",
-  net_1965: number,
-  net_1980: number,
+  c_1965: number,
+  c_1980: number,
   ...
 }
 License

@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
 interface InfluenceEntry {
   a_first: string;
   a_second: string;
-  [key: `a_${string}` | `b_${string}`]: number | string;
+  [key: `a_${string}` | `b_${string}` | `c_${string}`]: number | string;
 }
 
 interface Props {

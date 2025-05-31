@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 type InfluenceEntry = {
   a_first: string;
   a_second: string;
-  [key: `a_${string}` | `b_${string}` | `net_${string}`]: number | string;
+  [key: `a_${string}` | `b_${string}` | `c_${string}`]: number | string;
 };
 
 type Node = {
@@ -91,7 +91,7 @@ export default function NetworkGraph({ data }: NetworkGraphProps) {
 
       // Create links based on netVal
       data.forEach((entry) => {
-        const netKey = `net_${year}` as keyof InfluenceEntry;
+        const netKey = `c_${year}` as keyof InfluenceEntry;
         const netVal = entry[netKey] as number;
 
         const source = netVal > 0 ? entry.a_first : entry.a_second;
