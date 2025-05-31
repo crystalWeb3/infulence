@@ -291,7 +291,7 @@ export default function InfluenceNetworkGraph({
 
   return (
     <div className="relative w-full">
-      <svg ref={svgRef} width={1400} height={800} />
+      <svg ref={svgRef} className="fixed top-0 left-0 w-full h-full z-0" />
       <div ref={tooltipRef} className="absolute z-10" />
     </div>
   );
