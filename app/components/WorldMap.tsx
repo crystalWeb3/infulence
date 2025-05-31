@@ -132,8 +132,7 @@ const WorldMap: React.FC = () => {
       .translate([width / 2, height / 1.5]);
 
     const pathGenerator = d3.geoPath().projection(projection);
-
-    console.log(pathGenerator);
+   
 
     // Add a group to apply zoom/pan transforms
     svg.selectAll("*").remove(); // clear existing

@@ -35,15 +35,15 @@ export default function HomePage() {
         </div>
 
         <div className="w-[200px] bg-[#a0a0a0] p-4 rounded-lg shadow-lg absolute left-[5%] bottom-[5%] translate-x-[-50%] bottom-[30px] z-10">
-          <Link href={"/network"}>
+          <Link href={"/network2"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">
-              Power 6 Animation
+              All World's Network
             </div>
           </Link>
 
-          <Link href={"/network/all"}>
+          <Link href={"/chord"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">
-              Top 6 Countries
+              Chords
             </div>
           </Link>
 
@@ -53,15 +53,9 @@ export default function HomePage() {
             </div>
           </Link>
 
-          <Link href={"/chord"}>
+          <Link href={"/network"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">
-             Chords
-            </div>
-          </Link>
-
-          <Link href={"/network2"}>
-            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">
-              All World's Network
+              Power 6
             </div>
           </Link>
         </div>

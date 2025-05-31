@@ -273,9 +273,7 @@ export default function NetworkGraph({ data }: NetworkGraphProps) {
       </div>
       <svg ref={svgRef} width={800} height={600} />
 
-      <Link href={'/'}>
-        <div className="bg-[#f0f0f0] p-2 border-lg" >Back to Home</div>
-      </Link>
+    
     </div>
   );
 }

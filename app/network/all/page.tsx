@@ -10,6 +10,9 @@ export default function AllGraphsPage() {
         <Link href = "/">
         <div className="absolute top-[30px] p-2 bg-[#f0f0f0] rounded-lg">Go to Home</div>        
         </Link>
+        <Link href = "/network">
+        <div className="absolute top-[90px] p-2 bg-[#f0f0f0] rounded-lg">Go to Back</div>        
+        </Link>
       <h1 className="text-3xl font-bold mb-6 text-center">All Network Graphs (1965 ~ 2023)</h1>
       <AllGraphs data={data} />
     </div>
