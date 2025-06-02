@@ -6,26 +6,26 @@ import {
   SankeyNode,
   SankeyLink,
 } from "d3-sankey";
+import { countryNameToCode } from "@/utils/countryCodes";
 import { useEffect, useRef } from "react";
 
-interface InfluenceEntry {
-  a_first: string;
-  a_second: string;
-  [key: `a_${string}` | `b_${string}` | `c_${string}`]: number | string;
+interface SankeyInput {
+  start: string;
+  end: string;
+  value: number;
 }
 
 interface Props {
-  data: InfluenceEntry[];
-  year: string;
+  data: SankeyInput[];
 }
 
-export default function SankeyDiagram({ data, year }: Props) {
+export default function SankeyDiagram({ data }: Props) {
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (!data.length) return;
 
-    const width = 900;
+    const width = 1400;
     const height = 600;
 
     const svg = d3
@@ -35,14 +35,10 @@ export default function SankeyDiagram({ data, year }: Props) {
 
     svg.selectAll("*").remove();
 
-    // Extract unique nodes
-    const nodesSet = new Set<string>();
-    data.forEach((d) => {
-      nodesSet.add(d.a_first);
-      nodesSet.add(d.a_second);
-    });
-
-    const nodeNames = Array.from(nodesSet);
+    // Extract unique node names
+    const nodeNames = Array.from(
+      new Set(data.flatMap((d) => [d.start, d.end]))
+    );
 
     interface SankeyNodeType extends SankeyNode<any, any> {
       name: string;
@@ -56,33 +52,26 @@ export default function SankeyDiagram({ data, year }: Props) {
 
     const nodes: SankeyNodeType[] = nodeNames.map((name) => ({ name }));
 
-    const rawLinks: SankeyLinkType[] = data
-      .map((d) => {
-        const val = Number(d[`a_${year}`]);
-        return {
-          source: d.a_first,
-          target: d.a_second,
-          value: isNaN(val) ? 0 : val,
-        };
-      })
-      .filter((l) => l.value > 0 && l.source !== l.target);
+    const links: SankeyLinkType[] = data
+      .filter((d) => d.value > 0 && d.start !== d.end)
+      .map((d) => ({
+        source: d.start,
+        target: d.end,
+        value: d.value,
+      }));
 
-    const validLinks = rawLinks.filter(
-      (l) => nodeNames.includes(l.source) && nodeNames.includes(l.target)
-    );
+    // Optional: Remove mirrored/circular links
+    const seen: Record<string, boolean> = {};
+    const filteredLinks: SankeyLinkType[] = [];
 
-    let flg: Record<string, boolean> = {};
-    let nonCircularLinks = [];
-    for(let i = 0; i < validLinks.length; i++) {
-      let key = `${validLinks[i].target}-${validLinks[i].source}`;
+    for (const link of links) {
+      const reverseKey = `${link.target}-${link.source}`;
+      if (seen[reverseKey]) continue;
 
-      if(flg[key]) continue;
-      nonCircularLinks.push(validLinks[i]);
-      flg[`${validLinks[i].source}-${validLinks[i].target}`] = true;
-
+      seen[`${link.source}-${link.target}`] = true;
+      filteredLinks.push(link);
     }
 
-    console.log(nonCircularLinks)
     const sankeyGenerator = sankey<SankeyNodeType, SankeyLinkType>()
       .nodeWidth(20)
       .nodePadding(20)
@@ -96,7 +85,7 @@ export default function SankeyDiagram({ data, year }: Props) {
     try {
       sankeyData = sankeyGenerator({
         nodes: nodes.map((d) => ({ ...d })),
-        links: nonCircularLinks.map((d) => ({ ...d })),
+        links: filteredLinks.map((d) => ({ ...d })),
       });
     } catch (e) {
       console.error("Sankey layout error:", e);
@@ -137,23 +126,34 @@ export default function SankeyDiagram({ data, year }: Props) {
         return `${source.name} → ${target.name}\n${d.value}`;
       });
 
-    // Add labels
+    const flagSize = 30;
+
     svg
       .append("g")
-      .style("font", "12px sans-serif")
-      .selectAll("text")
+      .selectAll("image")
       .data(sankeyData.nodes)
-      .join("text")
+      .join("image")
+      .attr("href", (d) => {
+        const code = countryNameToCode[d.name];
+        return code
+          ? `https://hatscripts.github.io/circle-flags/flags/${code.toLowerCase()}.svg`
+          : null;
+      })
+      .attr("width", flagSize)
+      .attr("height", flagSize)
       .attr("x", (d) =>
-        (d.x0 ?? 0) < width / 2 ? (d.x1 ?? 0) + 6 : (d.x0 ?? 0) - 6
+        (d.x0 ?? 0) < width / 2 ? (d.x1 ?? 0) + 6 : (d.x0 ?? 0) - flagSize - 6
       )
-      .attr("y", (d) => ((d.y0 ?? 0) + (d.y1 ?? 0)) / 2)
-      .attr("dy", "0.35em")
-      .attr("text-anchor", (d) =>
-        (d.x0 ?? 0) < width / 2 ? "start" : "end"
-      )
-      .text((d) => d.name);
-  }, [data, year]);
+      .attr("y", (d) => ((d.y0 ?? 0) + (d.y1 ?? 0)) / 2 - flagSize / 2)
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("opacity", 0.8);
+      })
+      .on("mouseout", function () {
+        d3.select(this).attr("opacity", 1);
+      })
+      .append("title")
+      .text((d) => `${d.name}\n${d.value}`);
+  }, [data]);
 
   return <svg ref={ref}></svg>;
 }
