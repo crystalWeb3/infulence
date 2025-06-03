@@ -47,9 +47,9 @@ export default function HomePage() {
             </div>
           </Link>
 
-          <Link href={"/sankey"}>
+          <Link href={"/chord/v2"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">
-              Sankey
+              Chord (Version 2)
             </div>
           </Link>
 
