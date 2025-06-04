@@ -16,19 +16,17 @@ const powerToRegion: Record<string, string> = {
 };
 
 const regionColor: Record<string, string> = {
-  Asia: "#00A86B",
-  Europe: "#AA2910",
-  Africa: "#4be0ea",
-  Oceania: "#c4c4c4",
-  Americas: "#3C3B6E",
+  Asia: "#D32F2F", // Red
+  Europe: "#1976D2", // Blue
+  Africa: "#388E3C", // Green
+  Americas: "#7B1FA2", // Purple
+  Oceania: "#FBC02D", // Ochre (Yellow-ish)
 };
 
 const iconRegions: Record<string, string> = {
   Asia: "https://www.svgrepo.com/show/173977/world-globe-asia-view.svg",
-  Europe:
-    "https://www.svgrepo.com/show/352084/globe-europe.svg",
-  Africa:
-    "https://www.svgrepo.com/show/369332/globe-africa.svg",
+  Europe: "https://www.svgrepo.com/show/352084/globe-europe.svg",
+  Africa: "https://www.svgrepo.com/show/369332/globe-africa.svg",
   Oceania: "https://www.svgrepo.com/show/317084/continent.svg",
   Americas: "https://www.svgrepo.com/show/399370/earth-america.svg",
 };
@@ -44,7 +42,9 @@ export default function ChordDiagram2({ matrix, labels }: Props) {
   useEffect(() => {
     const width = 800;
     const height = 800;
-    const innerRadius = Math.min(width, height) * 0.4;
+    const totalInfluence = matrix.flat().reduce((a, b) => a + b, 0);
+    const scale = d3.scaleLinear().domain([0, 1000]).range([300, 400]); // adjust domain as needed
+    const innerRadius = scale(totalInfluence);
     const outerRadius = innerRadius + 10;
 
     const svg = d3
@@ -69,6 +69,13 @@ export default function ChordDiagram2({ matrix, labels }: Props) {
       .style("z-index", "1000")
       .style("opacity", 0);
 
+    for (let i = 0; i < matrix.length; i++) {
+      for (let j = 0; j < matrix.length; j++) {
+        const avg = (matrix[i][j] + matrix[j][i]) / 2;
+        matrix[i][j] = avg;
+        matrix[j][i] = avg;
+      }
+    }
     const chords = chord().padAngle(0.03).sortSubgroups(d3.descending)(matrix);
 
     const arcGen: Arc<any, d3.ChordGroup> = arc<d3.ChordGroup>()
@@ -102,42 +109,65 @@ export default function ChordDiagram2({ matrix, labels }: Props) {
     // Flags
     const flagSize = 30;
 
-    group
-  .append("image")
-  .attr("href", (d) => {
-    const name = labels[d.index];
+group.each(function (d) {
+  const groupEl = d3.select(this);
+  const name = labels[d.index];
+  const angle = (d.startAngle + d.endAngle) / 2;
+  const x = Math.cos(angle - Math.PI / 2) * (outerRadius + 20);
+  const y = Math.sin(angle - Math.PI / 2) * (outerRadius + 20);
+
+  if (regionColor[name]) {
+    // 🌍 Region: show upright text
+    groupEl
+      .append("text")
+      .attr("x", x)
+      .attr("y", y)
+      .attr("text-anchor", "middle")
+      .attr("alignment-baseline", "middle")
+      .attr("font-size", 12)
+      .attr(
+        "transform",
+        `rotate(${(angle * 180) / Math.PI - 90}, ${x}, ${y})`
+      )
+      .text(name)
+      .on("mouseover", (event) => {
+        tooltip.style("opacity", 1).html(`<strong>${name}</strong>`);
+      })
+      .on("mousemove", (event) => {
+        tooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY + "px");
+      })
+      .on("mouseout", () => tooltip.style("opacity", 0));
+  } else {
+    // 🇺🇸 Country: show upright flag
     const code = countryNameToCode[name];
-    const regionIcon = iconRegions[name];
-
-    if (regionIcon) return regionIcon;
-
-    return code
-      ? `https://hatscripts.github.io/circle-flags/flags/${code.toLowerCase()}.svg`
-      : `/flags/${name.replaceAll(" ", "_").toLowerCase()}.svg`;
-  })
-  .attr("width", flagSize)
-  .attr("height", flagSize)
-  .attr("x", -flagSize / 2)
-  .attr("y", -flagSize / 2)
-  .attr("transform", (d) => {
-    const angle = (d.startAngle + d.endAngle) / 2 - Math.PI / 2;
-    const x = Math.cos(angle) * (outerRadius + 18);
-    const y = Math.sin(angle) * (outerRadius + 18);
-    return `translate(${x},${y})`;
-  })
-  .on("mouseover", (event, d) => {
-    tooltip
-      .style("opacity", 1)
-      .html(`<strong>${labels[d.index]}</strong>`);
-  })
-  .on("mousemove", (event) => {
-    tooltip
-      .style("left", event.pageX + 10 + "px")
-      .style("top", event.pageY + "px");
-  })
-  .on("mouseout", () => tooltip.style("opacity", 0));
+    if (code) {
+      groupEl
+        .append("image")
+        .attr(
+          "href",
+          `https://hatscripts.github.io/circle-flags/flags/${code.toLowerCase()}.svg`
+        )
+        .attr("width", flagSize)
+        .attr("height", flagSize)
+        .attr("x", x - flagSize / 2)
+        .attr("y", y - flagSize / 2)
+        .on("mouseover", (event) => {
+          tooltip.style("opacity", 1).html(`<strong>${name}</strong>`);
+        })
+        .on("mousemove", (event) => {
+          tooltip
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY + "px");
+        })
+        .on("mouseout", () => tooltip.style("opacity", 0));
+    }
+  }
+});
 
     // Ribbons
+
     const ribbonGen = ribbon<Chord, ChordSubgroup>().radius(innerRadius);
     svg
       .append("g")
@@ -166,7 +196,9 @@ export default function ChordDiagram2({ matrix, labels }: Props) {
       })
       .on("mouseout", () => tooltip.style("opacity", 0));
 
-    return () => { tooltip.remove(); };
+    return () => {
+      tooltip.remove();
+    };
   }, [matrix, labels]);
 
   return <svg ref={ref} />;
