@@ -137,7 +137,7 @@ export default function ChordHierarchyPage() {
             setType(e.target.value as "a_to_b" | "b_to_a" | "net")
           }
         >
-          <option value="a_to_b">A ➝ B</option>
+          <option value="a_to_b">Directed Dyadic Influence</option>
           {/* <option value="b_to_a">B ➝ A</option>
           <option value="net">Net (A - B)</option> */}
         </select>
