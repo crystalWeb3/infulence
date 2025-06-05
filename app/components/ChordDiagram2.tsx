@@ -134,8 +134,8 @@ export default function ChordDiagram2({ matrix, labels, year }: Props) {
       const groupEl = d3.select(this);
       const name = labels[d.index];
       const angle = (d.startAngle + d.endAngle) / 2;
-      const x = Math.cos(angle - Math.PI / 2) * (outerRadius + 30);
-      const y = Math.sin(angle - Math.PI / 2) * (outerRadius + 30);
+      const x = Math.cos(angle - Math.PI / 2) * (outerRadius + 40);
+      const y = Math.sin(angle - Math.PI / 2) * (outerRadius + 40);
 
       if (regionColor[name]) {
         // 🌍 Region: show upright text
