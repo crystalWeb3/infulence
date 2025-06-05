@@ -2,6 +2,7 @@
 import * as d3 from "d3";
 import { chord, ribbon, Chord, ChordSubgroup } from "d3-chord";
 import { arc, Arc } from "d3-shape";
+import { chordDirected } from "d3-chord";
 import { useEffect, useRef } from "react";
 import { countryNameToCode } from "@/utils/countryCodes";
 import { countryNameToColor } from "@/utils/countryColors"; // NEW IMPORT
@@ -35,9 +36,10 @@ interface Props {
   matrix: number[][];
   labels: string[];
   year: string;
+  type?: "a_to_b" | "b_to_a" | "net";
 }
 
-export default function ChordDiagram2({ matrix, labels, year }: Props) {
+export default function ChordDiagram2({ matrix, labels, year, type }: Props) {
   const ref = useRef<SVGSVGElement>(null);
 
   const downloadSVG = () => {
@@ -90,14 +92,21 @@ export default function ChordDiagram2({ matrix, labels, year }: Props) {
       .style("z-index", "1000")
       .style("opacity", 0);
 
-    for (let i = 0; i < matrix.length; i++) {
-      for (let j = 0; j < matrix.length; j++) {
-        const avg = (matrix[i][j] + matrix[j][i]) / 2;
-        matrix[i][j] = avg;
-        matrix[j][i] = avg;
+    console.log("Matrix:", matrix);
+    console.log("Labels:", labels);
+
+    console.log("type:", type);
+    if (type === "net") {
+      for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix.length; j++) {
+          const avg = (matrix[i][j] + matrix[j][i]) / 2;
+          matrix[i][j] = avg;
+          matrix[j][i] = avg;
+        }
       }
     }
-    const chords = chord().padAngle(0.03).sortSubgroups(d3.descending)(matrix);
+
+    const chords = chordDirected().padAngle(0.03)(matrix);
 
     const arcGen: Arc<any, d3.ChordGroup> = arc<d3.ChordGroup>()
       .innerRadius(innerRadius)
@@ -206,7 +215,7 @@ export default function ChordDiagram2({ matrix, labels, year }: Props) {
       .on("mouseover", (event, d) => {
         const from = labels[d.source.index];
         const to = labels[d.target.index];
-        const value = matrix[d.source.index][d.target.index].toFixed(2);
+        const value = matrix[d.source.index][d.target.index].toFixed(3);
         tooltip
           .style("opacity", 1)
           .html(`<strong>${from} → ${to}</strong><br/>Influence: ${value}`);
@@ -227,7 +236,10 @@ export default function ChordDiagram2({ matrix, labels, year }: Props) {
     <div>
       <svg ref={ref} />
       <div className="flex item-center justify-center mt-4">
-        <button className="m-2 bg-[#f0f0f0] p-2 rounded-lg" onClick={downloadSVG}>
+        <button
+          className="m-2 bg-[#f0f0f0] p-2 rounded-lg"
+          onClick={downloadSVG}
+        >
           Download SVG
         </button>
       </div>

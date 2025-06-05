@@ -76,9 +76,9 @@ export default function ChordHierarchyPage() {
           value = +d[`b_${year}`];
           break;
         case "net":
-          from = d.c_first;
-          to = d.c_second;
-          value = +d[`c_${year}`];
+          from = d.a_first;
+          to = d.a_second;
+          value = +d[`a_${year}`];
           break;
       }
 
@@ -138,6 +138,7 @@ export default function ChordHierarchyPage() {
           }
         >
           <option value="a_to_b">Directed Dyadic Influence</option>
+          <option value="net">symmetrize</option>
           {/* <option value="b_to_a">B ➝ A</option>
           <option value="net">Net (A - B)</option> */}
         </select>
@@ -147,6 +148,7 @@ export default function ChordHierarchyPage() {
         matrix={processedData.matrix}
         labels={processedData.labels}
         year = {year}
+        type={type}
       />
 
       <Link
