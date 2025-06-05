@@ -115,7 +115,7 @@ export default function ChordHierarchyPage() {
     <div className="p-8 flex flex-col items-center">
       <div className="flex gap-4 mb-6 items-center">
         <h1 className="text-2xl font-bold">
-          Chord Diagram - Global Influence (Hierarchical)
+          Chord Diagram - Global Influence - V2
         </h1>
 
         <select
@@ -146,13 +146,14 @@ export default function ChordHierarchyPage() {
       <ChordDiagram
         matrix={processedData.matrix}
         labels={processedData.labels}
+        year = {year}
       />
 
       <Link
         href="/"
-        className="mt-6 text-blue-500 hover:underline text-sm underline-offset-2"
+        className="bg-[#f0f0f0] p-2 rounded-lg"
       >
-        ← Back to Dashboard
+         Go to Home
       </Link>
     </div>
   );

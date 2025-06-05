@@ -16,10 +16,10 @@ const powerToRegion: Record<string, string> = {
 };
 
 const regionColor: Record<string, string> = {
-  Asia: "#D32F2F", // Red
-  Europe: "#1976D2", // Blue
+  Asia: "#FF0000", // Red
+  Europe: "#0000FF", // Blue
   Africa: "#388E3C", // Green
-  Americas: "#7B1FA2", // Purple
+  Americas: "#800080", // Purple
   Oceania: "#FBC02D", // Ochre (Yellow-ish)
 };
 
@@ -34,17 +34,38 @@ const iconRegions: Record<string, string> = {
 interface Props {
   matrix: number[][];
   labels: string[];
+  year: string;
 }
 
-export default function ChordDiagram2({ matrix, labels }: Props) {
+export default function ChordDiagram2({ matrix, labels, year }: Props) {
   const ref = useRef<SVGSVGElement>(null);
+
+  const downloadSVG = () => {
+    const svg = ref.current;
+    if (!svg) return;
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
+    const blob = new Blob([source], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `chord_${year}`;
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
 
   useEffect(() => {
     const width = 800;
     const height = 800;
     const totalInfluence = matrix.flat().reduce((a, b) => a + b, 0);
-    const scale = d3.scaleLinear().domain([0, 1000]).range([300, 400]); // adjust domain as needed
+    const scale = d3.scaleLinear().domain([0, 200]).range([100, 400]);
+
     const innerRadius = scale(totalInfluence);
+
+    console.log("Total Influence:", totalInfluence);
+    console.log("Inner Radius:", innerRadius);
     const outerRadius = innerRadius + 10;
 
     const svg = d3
@@ -109,62 +130,62 @@ export default function ChordDiagram2({ matrix, labels }: Props) {
     // Flags
     const flagSize = 30;
 
-group.each(function (d) {
-  const groupEl = d3.select(this);
-  const name = labels[d.index];
-  const angle = (d.startAngle + d.endAngle) / 2;
-  const x = Math.cos(angle - Math.PI / 2) * (outerRadius + 20);
-  const y = Math.sin(angle - Math.PI / 2) * (outerRadius + 20);
+    group.each(function (d) {
+      const groupEl = d3.select(this);
+      const name = labels[d.index];
+      const angle = (d.startAngle + d.endAngle) / 2;
+      const x = Math.cos(angle - Math.PI / 2) * (outerRadius + 30);
+      const y = Math.sin(angle - Math.PI / 2) * (outerRadius + 30);
 
-  if (regionColor[name]) {
-    // 🌍 Region: show upright text
-    groupEl
-      .append("text")
-      .attr("x", x)
-      .attr("y", y)
-      .attr("text-anchor", "middle")
-      .attr("alignment-baseline", "middle")
-      .attr("font-size", 12)
-      .attr(
-        "transform",
-        `rotate(${(angle * 180) / Math.PI - 90}, ${x}, ${y})`
-      )
-      .text(name)
-      .on("mouseover", (event) => {
-        tooltip.style("opacity", 1).html(`<strong>${name}</strong>`);
-      })
-      .on("mousemove", (event) => {
-        tooltip
-          .style("left", event.pageX + 10 + "px")
-          .style("top", event.pageY + "px");
-      })
-      .on("mouseout", () => tooltip.style("opacity", 0));
-  } else {
-    // 🇺🇸 Country: show upright flag
-    const code = countryNameToCode[name];
-    if (code) {
-      groupEl
-        .append("image")
-        .attr(
-          "href",
-          `https://hatscripts.github.io/circle-flags/flags/${code.toLowerCase()}.svg`
-        )
-        .attr("width", flagSize)
-        .attr("height", flagSize)
-        .attr("x", x - flagSize / 2)
-        .attr("y", y - flagSize / 2)
-        .on("mouseover", (event) => {
-          tooltip.style("opacity", 1).html(`<strong>${name}</strong>`);
-        })
-        .on("mousemove", (event) => {
-          tooltip
-            .style("left", event.pageX + 10 + "px")
-            .style("top", event.pageY + "px");
-        })
-        .on("mouseout", () => tooltip.style("opacity", 0));
-    }
-  }
-});
+      if (regionColor[name]) {
+        // 🌍 Region: show upright text
+        groupEl
+          .append("text")
+          .attr("x", x)
+          .attr("y", y)
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .attr("font-size", 15)
+          // .attr(
+          //   "transform",
+          //   `rotate(${(angle * 180) / Math.PI - 90}, ${x}, ${y})`
+          // )
+          .text(name)
+          .on("mouseover", (event) => {
+            tooltip.style("opacity", 1).html(`<strong>${name}</strong>`);
+          })
+          .on("mousemove", (event) => {
+            tooltip
+              .style("left", event.pageX + 10 + "px")
+              .style("top", event.pageY + "px");
+          })
+          .on("mouseout", () => tooltip.style("opacity", 0));
+      } else {
+        // 🇺🇸 Country: show upright flag
+        const code = countryNameToCode[name];
+        if (code) {
+          groupEl
+            .append("image")
+            .attr(
+              "href",
+              `https://hatscripts.github.io/circle-flags/flags/${code.toLowerCase()}.svg`
+            )
+            .attr("width", flagSize)
+            .attr("height", flagSize)
+            .attr("x", x - flagSize / 2)
+            .attr("y", y - flagSize / 2)
+            .on("mouseover", (event) => {
+              tooltip.style("opacity", 1).html(`<strong>${name}</strong>`);
+            })
+            .on("mousemove", (event) => {
+              tooltip
+                .style("left", event.pageX + 10 + "px")
+                .style("top", event.pageY + "px");
+            })
+            .on("mouseout", () => tooltip.style("opacity", 0));
+        }
+      }
+    });
 
     // Ribbons
 
@@ -201,5 +222,14 @@ group.each(function (d) {
     };
   }, [matrix, labels]);
 
-  return <svg ref={ref} />;
+  return (
+    <div>
+      <svg ref={ref} />
+      <div className="flex item-center justify-center mt-4">
+        <button className="m-2 bg-[#f0f0f0] p-2 rounded-lg" onClick={downloadSVG}>
+          Download SVG
+        </button>
+      </div>
+    </div>
+  );
 }
