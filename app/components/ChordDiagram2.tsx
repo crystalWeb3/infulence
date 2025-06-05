@@ -145,7 +145,8 @@ export default function ChordDiagram2({ matrix, labels, year }: Props) {
           .attr("y", y)
           .attr("text-anchor", "middle")
           .attr("alignment-baseline", "middle")
-          .attr("font-size", 15)
+          .attr("font-family", "Times New Roman")
+          .attr("font-size", 18)
           // .attr(
           //   "transform",
           //   `rotate(${(angle * 180) / Math.PI - 90}, ${x}, ${y})`
