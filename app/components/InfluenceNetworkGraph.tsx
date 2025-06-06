@@ -68,6 +68,18 @@ export default function InfluenceNetworkGraph({
       };
     }
 
+    function shortenArcPath(x1: number, y1: number, x2: number, y2: number, r: number) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      const normX = dx / len;
+      const normY = dy / len;
+      const newX = x2 - normX * (r + 6);
+      const newY = y2 - normY * (r + 6);
+      const dr = len * 1.5;
+      return `M${x1},${y1}A${dr},${dr} 0 0,1 ${newX},${newY}`;
+    }
+
     nodes.forEach((node) => {
       const group = getContinentByCountry(node.id);
       node.group = group || "Other";
@@ -97,10 +109,7 @@ export default function InfluenceNetworkGraph({
       ].includes(allview)
     ) {
       groupCenters = Object.fromEntries(
-        Object.entries(groupCenters).map(([k]) => [
-          k,
-          [width * 0.5, height * 0.4],
-        ])
+        Object.entries(groupCenters).map(([k]) => [k, [width * 0.5, height * 0.4]])
       );
     }
 
@@ -121,23 +130,18 @@ export default function InfluenceNetworkGraph({
 
     svg.selectAll("*").remove();
 
-    const zoomGroup = svg.append("g"); // Group to zoom/pan
-
+    const zoomGroup = svg.append("g");
     const defs = svg.append("defs");
 
+    const sizeScale = (value: number) => {
+      if (value <= 0) value = 0.001;
+      return Math.max(20, Math.sqrt(Math.abs(value || 0)) * 20);
+    };
+
     links.forEach((link) => {
-      const sourceId =
-        typeof link.source === "object" &&
-        link.source !== null &&
-        "id" in link.source
-          ? (link.source as { id: string }).id
-          : link.source;
-      const targetId =
-        typeof link.target === "object" &&
-        link.target !== null &&
-        "id" in link.target
-          ? (link.target as { id: string }).id
-          : link.target;
+      const sourceId = typeof link.source === "object" ? (link.source as any).id : link.source;
+      const targetId = typeof link.target === "object" ? (link.target as any).id : link.target;
+
       const sourceCode = countryNameToCode[sourceId] || sourceId;
       const targetCode = countryNameToCode[targetId] || targetId;
       const markerId = `arrow-${sourceCode}-${targetCode}`;
@@ -146,10 +150,10 @@ export default function InfluenceNetworkGraph({
         .append("marker")
         .attr("id", markerId)
         .attr("viewBox", "0 -5 10 10")
-        .attr("refX", 30)
+        .attr("refX", 3)
         .attr("refY", 0)
-        .attr("markerWidth", 10)
-        .attr("markerHeight", 10)
+        .attr("markerWidth", 8)
+        .attr("markerHeight", 8)
         .attr("orient", "auto")
         .attr("markerUnits", "userSpaceOnUse")
         .append("path")
@@ -170,6 +174,17 @@ export default function InfluenceNetworkGraph({
       .force("grouping", forceGroupCentering(0.4))
       .force("clustering", forceCluster(0.5));
 
+    const tooltip = d3
+      .select(tooltipRef.current)
+      .style("position", "absolute")
+      .style("background", "rgba(0,0,0,0.7)")
+      .style("color", "#fff")
+      .style("padding", "6px 10px")
+      .style("border-radius", "4px")
+      .style("pointer-events", "none")
+      .style("font-size", "14px")
+      .style("display", "none");
+
     const link = zoomGroup
       .append("g")
       .attr("fill", "none")
@@ -178,9 +193,8 @@ export default function InfluenceNetworkGraph({
       .data(links)
       .join("path")
       .attr("stroke", (d: any) => d.color || "#ccc")
-      .attr("stroke-width", (d: any) =>
-        Math.max(1, Math.sqrt(Math.abs(d.value)) * 10)
-      )
+      .attr("stroke-width", (d: any) => Math.max(1, Math.sqrt(Math.abs(d.value)) * 10))
+      .attr("stroke-linecap", "round")
       .attr("marker-end", (d: any) => {
         const sourceId = typeof d.source === "object" ? d.source.id : d.source;
         const targetId = typeof d.target === "object" ? d.target.id : d.target;
@@ -193,36 +207,14 @@ export default function InfluenceNetworkGraph({
         const target = typeof d.target === "object" ? d.target.id : d.target;
         tooltip
           .style("display", "block")
-          .html(
-            `<strong>${source} → ${target}</strong><br/>Influence: ${d.value.toFixed(
-              2
-            )}`
-          );
+          .html(`<strong>${source} → ${target}</strong><br/>Influence: ${d.value.toFixed(2)}`);
       })
       .on("mousemove", function (event) {
-        tooltip
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY - 20}px`);
+        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 20}px`);
       })
       .on("mouseout", function () {
         tooltip.style("display", "none");
       });
-
-    const tooltip = d3
-      .select(tooltipRef.current)
-      .style("position", "absolute")
-      .style("background", "rgba(0,0,0,0.7)")
-      .style("color", "#fff")
-      .style("padding", "6px 10px")
-      .style("border-radius", "4px")
-      .style("pointer-events", "none")
-      .style("font-size", "14px")
-      .style("display", "none");
-
-    const sizeScale = (value: number) => {
-      if (value <= 0) value = 0.001;
-      return Math.max(20, Math.sqrt(Math.abs(value || 0)) * 20);
-    };
 
     const nodeGroup = zoomGroup
       .append("g")
@@ -235,25 +227,17 @@ export default function InfluenceNetworkGraph({
       .append("xhtml:img")
       .attr("src", (d) => {
         const code = countryNameToCode[d.id];
-        return code
-          ? `https://hatscripts.github.io/circle-flags/flags/${code}.svg`
-          : "";
+        return code ? `https://hatscripts.github.io/circle-flags/flags/${code}.svg` : "";
       })
       .attr("width", (d) => sizeScale(d.value))
       .attr("height", (d) => sizeScale(d.value))
       .style("border-radius", "50%")
       .style("border", "1px solid #ccc")
       .on("mouseover", function (event, d: any) {
-        tooltip
-          .style("display", "block")
-          .html(
-            `<strong>${d.id}</strong><br/>Influence: ${d.value.toFixed(2)}`
-          );
+        tooltip.style("display", "block").html(`<strong>${d.id}</strong><br/>Influence: ${d.value.toFixed(2)}`);
       })
       .on("mousemove", function (event) {
-        tooltip
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY - 20}px`);
+        tooltip.style("left", `${event.pageX + 10}px`).style("top", `${event.pageY - 20}px`);
       })
       .on("mouseout", function () {
         tooltip.style("display", "none");
@@ -265,10 +249,8 @@ export default function InfluenceNetworkGraph({
         const y1 = d.source.y;
         const x2 = d.target.x;
         const y2 = d.target.y;
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const dr = Math.sqrt(dx * dx + dy * dy) * 1.5;
-        return `M${x1},${y1}A${dr},${dr} 0 0,1 ${x2},${y2}`;
+        const rTarget = sizeScale(d.target.value) / 2;
+        return shortenArcPath(x1, y1, x2, y2, rTarget);
       });
 
       zoomGroup
