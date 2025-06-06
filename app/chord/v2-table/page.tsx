@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import influenceDataRawJson from "@/data/influence2.json";
 import regionMap from "@/data/regionMap.json";
+import Link from "next/link";
 
 const influenceDataRaw: any[] = Array.isArray(influenceDataRawJson)
   ? influenceDataRawJson
@@ -29,6 +30,7 @@ const allYears = ["1965", "1980", "1995", "2010", "2023"];
 
 export default function ChordDataTablePage() {
   const [selectedYear, setSelectedYear] = useState("2023");
+  const [type, setType] = useState<"a_to_b" | "b_to_a" | "net">("a_to_b");
   const [searchFrom, setSearchFrom] = useState("");
   const [searchTo, setSearchTo] = useState("");
   const [sortBy, setSortBy] = useState<"from" | "to" | "value">("value");
@@ -50,17 +52,55 @@ export default function ChordDataTablePage() {
     const pairMap = new Map<string, number>();
     let totalInfluence = 0;
 
-    for (const d of influenceDataRaw) {
-      const from = getNode(d.a_first);
-      const to = getNode(d.a_second);
-      const value = +d[`a_${selectedYear}`];
+    if (type === "net") {
+      const forwardMap = new Map<string, number>();
+      const reverseMap = new Map<string, number>();
 
-      if (!from || !to || from === to) continue;
-      if (!allNodes.includes(from) || !allNodes.includes(to)) continue;
+      for (const d of influenceDataRaw) {
+        const a = getNode(d.a_first);
+        const b = getNode(d.a_second);
+        const valAB = +d[`a_${selectedYear}`];
+        const valBA = +d[`b_${selectedYear}`];
 
-      const key = `${from}|||${to}`;
-      pairMap.set(key, (pairMap.get(key) || 0) + value);
-      totalInfluence += value;
+        if (!a || !b || a === b) continue;
+        if (!allNodes.includes(a) || !allNodes.includes(b)) continue;
+
+        const keyAB = `${a}|||${b}`;
+        const keyBA = `${b}|||${a}`;
+
+        forwardMap.set(keyAB, (forwardMap.get(keyAB) || 0) + valAB);
+        reverseMap.set(keyBA, (reverseMap.get(keyBA) || 0) + valBA);
+      }
+
+      const allKeys = new Set([...forwardMap.keys(), ...reverseMap.keys()]);
+
+      for (const key of allKeys) {
+        const [from, to] = key.split("|||");
+        const keyAB = `${from}|||${to}`;
+        const keyBA = `${to}|||${from}`;
+
+        const valAB = forwardMap.get(keyAB) || 0;
+        const valBA = reverseMap.get(keyBA) || 0;
+        const netVal = valAB - valBA;
+
+        if (netVal > 0) {
+          pairMap.set(keyAB, netVal);
+          totalInfluence += netVal;
+        }
+      }
+    } else {
+      for (const d of influenceDataRaw) {
+        const from = getNode(type === "a_to_b" ? d.a_first : d.b_first);
+        const to = getNode(type === "a_to_b" ? d.a_second : d.b_second);
+        const value = +d[`${type === "a_to_b" ? "a" : "b"}_${selectedYear}`];
+
+        if (!from || !to || from === to) continue;
+        if (!allNodes.includes(from) || !allNodes.includes(to)) continue;
+
+        const key = `${from}|||${to}`;
+        pairMap.set(key, (pairMap.get(key) || 0) + value);
+        totalInfluence += value;
+      }
     }
 
     let resultRows = Array.from(pairMap.entries()).map(([key, value]) => {
@@ -68,7 +108,6 @@ export default function ChordDataTablePage() {
       return { from, to, value };
     });
 
-    // Filter
     if (searchFrom)
       resultRows = resultRows.filter((r) =>
         r.from.toLowerCase().includes(searchFrom.toLowerCase())
@@ -78,7 +117,6 @@ export default function ChordDataTablePage() {
         r.to.toLowerCase().includes(searchTo.toLowerCase())
       );
 
-    // Sort
     resultRows.sort((a, b) => {
       const valA = a[sortBy];
       const valB = b[sortBy];
@@ -87,17 +125,20 @@ export default function ChordDataTablePage() {
       return 0;
     });
 
-    return { rows: resultRows, total: totalInfluence };
-  }, [selectedYear, searchFrom, searchTo, sortBy, sortAsc]);
+    const filteredTotal = resultRows.reduce((sum, r) => sum + r.value, 0);
+    return { rows: resultRows, total: filteredTotal };
+  }, [selectedYear, searchFrom, searchTo, sortBy, sortAsc, type]);
 
   const downloadCSV = () => {
     const header = "From,To,Influence\n";
-    const body = rows.map((r) => `${r.from},${r.to},${r.value.toFixed(3)}`).join("\n");
+    const body = rows
+      .map((r) => `${r.from},${r.to},${r.value.toFixed(3)}`)
+      .join("\n");
     const blob = new Blob([header + body], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `influence_${selectedYear}.csv`;
+    a.download = `influence_${type}_${selectedYear}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -110,10 +151,15 @@ export default function ChordDataTablePage() {
     }
   };
 
+  const typeMap: Record<string, string> = {
+    a_to_b: "Directed Dyadic Influence",
+    net: "Net Influence",
+  };
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold mb-4">
-        Influence Table - {selectedYear}
+        Influence Table - {selectedYear} ({typeMap[type] || type})
       </h1>
 
       <div className="mb-4 flex items-center gap-4 flex-wrap">
@@ -130,6 +176,18 @@ export default function ChordDataTablePage() {
           ))}
         </select>
 
+        <label className="font-medium">Type:</label>
+        <select
+          value={type}
+          onChange={(e) =>
+            setType(e.target.value as "a_to_b" | "b_to_a" | "net")
+          }
+          className="p-2 border rounded"
+        >
+          <option value="a_to_b">Directed Dyadic Influence</option>
+          <option value="net">Net Influence</option>
+        </select>
+
         <input
           placeholder="Search From"
           value={searchFrom}
@@ -142,12 +200,22 @@ export default function ChordDataTablePage() {
           onChange={(e) => setSearchTo(e.target.value)}
           className="p-2 border rounded"
         />
-        <button
-          onClick={downloadCSV}
-          className="ml-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Download CSV
-        </button>
+
+        <div className="flex-grow ml-auto flex items-center gap-2">
+          <button
+            onClick={downloadCSV}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          >
+            Download CSV
+          </button>
+
+          <Link
+            href={"/"}
+            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+          >
+            Go to Home
+          </Link>
+        </div>
       </div>
 
       <div className="mb-4 text-lg font-semibold">
@@ -164,11 +232,7 @@ export default function ChordDataTablePage() {
                   onClick={() => handleSort(col as any)}
                   className="border px-4 py-2 text-left cursor-pointer hover:bg-gray-200"
                 >
-                  {col === "from"
-                    ? "From"
-                    : col === "to"
-                    ? "To"
-                    : "Influence"}{" "}
+                  {col === "from" ? "From" : col === "to" ? "To" : "Influence"}{" "}
                   {sortBy === col ? (sortAsc ? "↑" : "↓") : ""}
                 </th>
               ))}

@@ -62,7 +62,10 @@ export default function ChordDiagram2({ matrix, labels, year, type }: Props) {
     const width = 800;
     const height = 800;
     const totalInfluence = matrix.flat().reduce((a, b) => a + b, 0);
-    const scale = d3.scaleLinear().domain([0, 200]).range([100, 400]);
+    let scale = d3.scaleLinear().domain([0, 200]).range([100, 400]);
+    if(type === "net") {
+      scale = d3.scaleLinear().domain([0, 150]).range([100, 400]);
+    }
 
     const innerRadius = scale(totalInfluence);
 
@@ -95,16 +98,16 @@ export default function ChordDiagram2({ matrix, labels, year, type }: Props) {
     console.log("Matrix:", matrix);
     console.log("Labels:", labels);
 
-    console.log("type:", type);
-    if (type === "net") {
-      for (let i = 0; i < matrix.length; i++) {
-        for (let j = 0; j < matrix.length; j++) {
-          const avg = (matrix[i][j] + matrix[j][i]) / 2;
-          matrix[i][j] = avg;
-          matrix[j][i] = avg;
-        }
-      }
-    }
+    // console.log("type:", type);
+    // if (type === "net") {
+    //   for (let i = 0; i < matrix.length; i++) {
+    //     for (let j = 0; j < matrix.length; j++) {
+    //       const avg = (matrix[i][j] + matrix[j][i]) / 2;
+    //       matrix[i][j] = avg;
+    //       matrix[j][i] = avg;
+    //     }
+    //   }
+    // }
 
     const chords = chordDirected().padAngle(0.03)(matrix);
 
