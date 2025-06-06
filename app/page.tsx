@@ -52,6 +52,11 @@ export default function HomePage() {
               Chord (Version 2)
             </div>
           </Link>
+          <Link href={"/chord/v2-table"}>
+            <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">
+              Chord-V2 Tables
+            </div>
+          </Link>
 
           <Link href={"/network"}>
             <div className="text-center bg-[#f0f0f0] rounded-lg mb-2">

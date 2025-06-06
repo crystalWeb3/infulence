@@ -5,7 +5,9 @@ import Link from "next/link";
 import influenceDataRawJson from "@/data/influence2.json";
 
 // Ensure influenceDataRaw is typed as an array
-const influenceDataRaw: any[] = Array.isArray(influenceDataRawJson) ? influenceDataRawJson : [];
+const influenceDataRaw: any[] = Array.isArray(influenceDataRawJson)
+  ? influenceDataRawJson
+  : [];
 import regionMap from "@/data/regionMap.json";
 
 const ChordDiagram = dynamic(() => import("@/app/components/ChordDiagram2"), {
@@ -29,11 +31,23 @@ const powerToRegion = {
   Germany: "Europe",
   "United Kingdom": "Europe",
 };
-const allNodes = ["United States of America", "Americas", "France", "Germany", "United Kingdom", "Russian Federation", "Europe", "China", "Asia",  "Africa", "Oceania"];
+const allNodes = [
+  "United States of America",
+  "Americas",
+  "France",
+  "Germany",
+  "United Kingdom",
+  "Russian Federation",
+  "Europe",
+  "China",
+  "Asia",
+  "Africa",
+  "Oceania",
+];
 
 export default function ChordHierarchyPage() {
   const [year, setYear] = useState("2023");
-  const [type, setType] = useState<"a_to_b" | "b_to_a" | "net">("a_to_b");
+  const [type, setType] = useState<"a_to_b" | "b_to_a" | "net">("net");
 
   const processedData = useMemo(() => {
     // Create country -> region map
@@ -47,7 +61,8 @@ export default function ChordHierarchyPage() {
     // Helper: Get region group for a country or power
     const getRegionGroup = (actor: string): string => {
       if (regions.includes(actor)) return actor;
-      if (powers.includes(actor)) return powerToRegion[actor as keyof typeof powerToRegion];
+      if (powers.includes(actor))
+        return powerToRegion[actor as keyof typeof powerToRegion];
       return countryToRegion[actor];
     };
 
@@ -96,7 +111,7 @@ export default function ChordHierarchyPage() {
       // const targetGroup = getRegionGroup(target);
       // if (sourceGroup === targetGroup) return;
 
-      if(source === target) return; // Skip self-loops
+      if (source === target) return; // Skip self-loops
 
       matrixMap[source][target] += value;
     });
@@ -104,6 +119,17 @@ export default function ChordHierarchyPage() {
     const matrix: number[][] = allNodes.map((from) =>
       allNodes.map((to) => matrixMap[from][to] || 0)
     );
+
+    if (type === "net") {
+      const aToBMatrix = matrix; 
+      const netMatrix: number[][] = allNodes.map((from, i) =>
+        allNodes.map((to, j) => Math.max(aToBMatrix[i][j] - aToBMatrix[j][i], 0))
+      );
+
+      console.log("Net Matrix:", netMatrix);
+
+      return { matrix: netMatrix, labels: allNodes };
+    }
 
     return {
       matrix,
@@ -137,8 +163,10 @@ export default function ChordHierarchyPage() {
             setType(e.target.value as "a_to_b" | "b_to_a" | "net")
           }
         >
+          <option value="net">Net Influence</option>
           <option value="a_to_b">Directed Dyadic Influence</option>
-          <option value="net">symmetrize</option>
+          
+          {/* <option value="sym">symmetrize</option> */}
           {/* <option value="b_to_a">B ➝ A</option>
           <option value="net">Net (A - B)</option> */}
         </select>
@@ -147,15 +175,12 @@ export default function ChordHierarchyPage() {
       <ChordDiagram
         matrix={processedData.matrix}
         labels={processedData.labels}
-        year = {year}
+        year={year}
         type={type}
       />
 
-      <Link
-        href="/"
-        className="bg-[#f0f0f0] p-2 rounded-lg"
-      >
-         Go to Home
+      <Link href="/" className="bg-[#f0f0f0] p-2 rounded-lg">
+        Go to Home
       </Link>
     </div>
   );
