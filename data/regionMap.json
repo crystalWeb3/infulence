@@ -27,9 +27,10 @@
     "Liberia", "Gambia", "Mauritania", "Burkina Faso", "Togo", "Benin", "Chad", "Central African Republic",
     "Democratic Congo", "Congo; Dem. Republic of the", "Sudan South", "Eritrea", "Djibouti",
     "Somalia", "Cape Verde", "Sao Tome and Principe", "Comoros", "Madagascar", "Mauritius",
-    "Seychelles", "Eswatini", "Lesotho", "Malawi", "Burundi", "Guinea", "Guinea-Bissau", "Equatorial Guinea",
+    "Seychelles", "Eswatini", "Lesotho", "Malawi", "Burundi", "Guinea", "Guinea Bissau", "Equatorial Guinea",
     "Sao Tome and Principe", "Tanzania", "Zambia", "Zimbabwe", "Angola", "Namibia", "Botswana",
-    "Trinidad and Tobago", "Seychelles", "Mauritius", "Madagascar", "Comoros", "Reunion"
+    "Trinidad and Tobago", "Seychelles", "Mauritius", "Madagascar", "Comoros", "Reunion",
+    "Guinea Bissau"
   ],
   "Americas": [
     "United States of America", "Canada", "Mexico", "Cuba", "Guatemala", "Honduras", "Panama", "Jamaica",

@@ -68,7 +68,7 @@ export const Continents: Record<string, string[]> = {
     "Indonesia",
     "Saudi Arabia",
     "Iran",
-    "Vietnam",
+    "Viet Nam",
     "Thailand",
     "Philippines",
   ],
