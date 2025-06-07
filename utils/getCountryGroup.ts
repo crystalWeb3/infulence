@@ -56,6 +56,7 @@ const CONTINENTS: Record<string, string[]> = {
 
     "Timo Leste", "Cambodia", "Laos", "Mongolia", "Brunei Darussalam", "Bhutan", "Kazakhstan",
     "Uzbekistan", "Turkmenistan", "Kyrgyzstan", "Tajikistan", "Azerbaijan",
+    "Viet Nam"
 
 
   ],
