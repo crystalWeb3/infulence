@@ -54,7 +54,9 @@ const CONTINENTS: Record<string, string[]> = {
     "Philippines", "Thailand", "Malaysia", "Singapore", "Saudi Arabia", "Iran", "Taiwan", "Hong Kong",
     "Korea; Dem. People's Republic", "Myanmar", "Sri Lanka", "Nepal", "Afghanistan",
 
-    "Timo-Leste", "Cambodia", "Laos", "Mongolia", "Brunei Darussalam", "Bhutan",
+    "Timo Leste", "Cambodia", "Laos", "Mongolia", "Brunei Darussalam", "Bhutan", "Kazakhstan",
+    "Uzbekistan", "Turkmenistan", "Kyrgyzstan", "Tajikistan", "Azerbaijan",
+    "Viet Nam"
 
 
   ],
@@ -69,18 +71,20 @@ const CONTINENTS: Record<string, string[]> = {
     "Portugal", "Czech Republic", "Hungary", "Romania", "Slovakia", "Bulgaria", "Greece", "Serbia",
     "Croatia", "Slovenia", "Bosnia and Herzegovina", "Montenegro", "North Macedonia", "Albania",
     "Estonia", "Latvia", "Lithuania", "Iceland", "Luxembourg", "Malta", "Andorra", "Monaco",
-    "Liechtenstein", "San Marino", "Vatican City", "Kosovo", "Moldova", "Belarus", "Armenia",
+    "Liechtenstein", "San Marino", "Vatican City", "Kosovo", "Moldova", "Belarus", "Armenia",  "Georgia"
   ],
   Africa: [
     "South Africa", "Nigeria", "Egypt", "Ethiopia", "Kenya", "Ghana", "Morocco", "Algeria",
     "Tunisia", "Tanzania", "Angola", "Mozambique", "Zambia", "Uganda", "Sudan", "Rwanda",
-    "Cote d'Ivoire", "Cameroon", "Senegal", "Mali", "Zimbabwe", "Namibia", "Botswana", "Sierra Leone",
+    "Cote D'Ivoire", "Cameroon", "Senegal", "Mali", "Zimbabwe", "Namibia", "Botswana", "Sierra Leone",
     "Liberia", "Gambia", "Mauritania", "Burkina Faso", "Togo", "Benin", "Chad", "Central African Republic",
     "Democratic Congo", "Congo; Dem. Republic of the", "Sudan South", "Eritrea", "Djibouti",
     "Somalia", "Cape Verde", "Sao Tome and Principe", "Comoros", "Madagascar", "Mauritius",
-    "Seychelles", "Eswatini", "Lesotho", "Malawi", "Burundi", "Guinea", "Guinea-Bissau", "Equatorial Guinea",
+    "Seychelles", "Eswatini", "Lesotho", "Malawi", "Burundi", "Guinea", "Guinea Bissau", "Equatorial Guinea",
     "Sao Tome and Principe", "Tanzania", "Zambia", "Zimbabwe", "Angola", "Namibia", "Botswana",
-    "Trinidad and Tobago", "Seychelles", "Mauritius", "Madagascar", "Comoros", "Reunion",
+    "Trinidad and Tobago", "Seychelles", "Mauritius", "Madagascar", "Comoros", "Reunion", "Cabo Verde",
+    "St. Lucia", "Sahrawi Arab Dem Rep"
+
   ],
   NorthAmerica: [
     "United States of America", "Canada", "Mexico", "Cuba", "Guatemala", "Honduras", "Panama", "Jamaica"
@@ -88,7 +92,7 @@ const CONTINENTS: Record<string, string[]> = {
   SouthAmerica: [
     "Brazil", "Argentina", "Colombia", "Chile", "Peru", "Venezuela; Bolivarian Republic", "Ecuador", "Bolivia",
     "Paraguay", "Uruguay", "Guyana", "Suriname", "French Guiana",
-    "Falkland Islands"
+    "Falkland Islands", "Puerto Rico"
   ],
   Oceania: [
     "Australia", "New Zealand", "Papua New Guinea", "Fiji", "Samoa", "Micronesia", "Solomon Islands",
