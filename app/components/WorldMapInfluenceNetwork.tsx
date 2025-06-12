@@ -24,7 +24,28 @@ type Props = {
 const WorldMapInfluenceNetwork: React.FC<Props> = ({ nodes, links }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+  function downloadSVG() {
+    if (!svgRef.current) return;
 
+    const svgElement = svgRef.current;
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svgElement);
+
+    // Add XML declaration
+    const svgBlob = new Blob(
+      ['<?xml version="1.0" standalone="no"?>\r\n' + source],
+      { type: "image/svg+xml;charset=utf-8" }
+    );
+    const url = URL.createObjectURL(svgBlob);
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = url;
+    downloadLink.download = "influence_network.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(url);
+  }
   useEffect(() => {
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -62,7 +83,8 @@ const WorldMapInfluenceNetwork: React.FC<Props> = ({ nodes, links }) => {
       nodes.forEach((node) => {
         const feature = data.features.find(
           (f: any) =>
-            f.properties?.postal === countryNameToCode[node.id]?.toUpperCase() ||
+            f.properties?.postal ===
+              countryNameToCode[node.id]?.toUpperCase() ||
             f.properties?.name_sort === node.id
         );
         if (feature && feature.geometry) {
@@ -99,7 +121,9 @@ const WorldMapInfluenceNetwork: React.FC<Props> = ({ nodes, links }) => {
       const linkGroup = svg.append("g").attr("class", "link-group");
       const linkWidthScale = d3
         .scaleSqrt()
-        .domain(d3.extent(links.map((l) => Math.abs(l.value))) as [number, number])
+        .domain(
+          d3.extent(links.map((l) => Math.abs(l.value))) as [number, number]
+        )
         .range([1, 4]);
       linkGroup
         .selectAll("path")
@@ -156,8 +180,14 @@ const WorldMapInfluenceNetwork: React.FC<Props> = ({ nodes, links }) => {
         })
         .attr("width", (d) => sizeScale(d.value))
         .attr("height", (d) => sizeScale(d.value))
-        .attr("x", (d) => (nodePositions[d.id]?.[0] || 0) - sizeScale(d.value) / 2)
-        .attr("y", (d) => (nodePositions[d.id]?.[1] || 0) - sizeScale(d.value) / 2)
+        .attr(
+          "x",
+          (d) => (nodePositions[d.id]?.[0] || 0) - sizeScale(d.value) / 2
+        )
+        .attr(
+          "y",
+          (d) => (nodePositions[d.id]?.[1] || 0) - sizeScale(d.value) / 2
+        )
         .attr("opacity", 1)
         .on("mouseover", function (event, d) {
           if (!tooltipRef.current) return;
@@ -177,7 +207,8 @@ const WorldMapInfluenceNetwork: React.FC<Props> = ({ nodes, links }) => {
 
     // Add zoom/pan
     svg.call(
-      d3.zoom<SVGSVGElement, unknown>()
+      d3
+        .zoom<SVGSVGElement, unknown>()
         .scaleExtent([0.5, 8])
         .on("zoom", (event) => {
           svg.selectAll("g").attr("transform", event.transform);
@@ -205,6 +236,12 @@ const WorldMapInfluenceNetwork: React.FC<Props> = ({ nodes, links }) => {
           whiteSpace: "pre-line",
         }}
       />
+      <button
+        onClick={() => downloadSVG()}
+        className="absolute top-4 right-4 z-20 bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Download SVG
+      </button>
     </div>
   );
 };
