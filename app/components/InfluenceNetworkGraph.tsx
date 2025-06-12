@@ -33,6 +33,28 @@ export default function InfluenceNetworkGraph({
 }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
+  function downloadSVG() {
+    if (!svgRef.current) return;
+
+    const svgElement = svgRef.current;
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svgElement);
+
+    // Add XML declaration
+    const svgBlob = new Blob(
+      ['<?xml version="1.0" standalone="no"?>\r\n' + source],
+      { type: "image/svg+xml;charset=utf-8" }
+    );
+    const url = URL.createObjectURL(svgBlob);
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = url;
+    downloadLink.download = "influence_network.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    URL.revokeObjectURL(url);
+  }
 
   useEffect(() => {
     if (originalNodes.length === 0 || originalLinks.length === 0) return;
@@ -97,7 +119,13 @@ export default function InfluenceNetworkGraph({
       };
     }
 
-    function shortenArcPath(x1: number, y1: number, x2: number, y2: number, r: number) {
+    function shortenArcPath(
+      x1: number,
+      y1: number,
+      x2: number,
+      y2: number,
+      r: number
+    ) {
       const dx = x2 - x1;
       const dy = y2 - y1;
       const len = Math.sqrt(dx * dx + dy * dy);
@@ -131,7 +159,10 @@ export default function InfluenceNetworkGraph({
       ].includes(allview)
     ) {
       groupCenters = Object.fromEntries(
-        Object.entries(groupCenters).map(([k]) => [k, [width * 0.5, height * 0.4]])
+        Object.entries(groupCenters).map(([k]) => [
+          k,
+          [width * 0.5, height * 0.4],
+        ])
       );
     }
 
@@ -247,7 +278,11 @@ export default function InfluenceNetworkGraph({
         const target = typeof d.target === "object" ? d.target.id : d.target;
         tooltip
           .style("display", "block")
-          .html(`<strong>${source} → ${target}</strong><br/>Influence: ${d.value.toFixed(2)}`);
+          .html(
+            `<strong>${source} → ${target}</strong><br/>Influence: ${d.value.toFixed(
+              2
+            )}`
+          );
       })
       .on("mousemove", function (event) {
         tooltip
@@ -280,7 +315,9 @@ export default function InfluenceNetworkGraph({
       .on("mouseover", function (event, d: any) {
         tooltip
           .style("display", "block")
-          .html(`<strong>${d.id}</strong><br/>Influence: ${d.value.toFixed(2)}`);
+          .html(
+            `<strong>${d.id}</strong><br/>Influence: ${d.value.toFixed(2)}`
+          );
       })
       .on("mousemove", function (event) {
         tooltip
@@ -309,7 +346,8 @@ export default function InfluenceNetworkGraph({
 
     if (svgRef.current) {
       d3.select<SVGSVGElement, unknown>(svgRef.current).call(
-        d3.zoom<SVGSVGElement, unknown>()
+        d3
+          .zoom<SVGSVGElement, unknown>()
           .scaleExtent([0.3, 5])
           .on("zoom", (event) => {
             zoomGroup.attr("transform", event.transform);
@@ -322,6 +360,12 @@ export default function InfluenceNetworkGraph({
     <div className="relative w-full">
       <svg ref={svgRef} className="fixed top-0 left-0 w-full h-full z-0" />
       <div ref={tooltipRef} className="absolute z-10" />
+      <button
+        onClick={() => downloadSVG()}
+        className="absolute top-4 right-4 z-20 bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Download SVG
+      </button>
     </div>
   );
 }
