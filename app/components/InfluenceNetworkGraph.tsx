@@ -263,7 +263,7 @@ export default function InfluenceNetworkGraph({
       .join("path")
       .attr("stroke", (d: any) => d.color || "#ccc")
       .attr("stroke-width", (d: any) =>
-        Math.max(1, Math.sqrt(Math.abs(d.value)) * 10)
+        Math.max(1, Math.sqrt(Math.abs(d.value)) * 5)
       )
       .attr("stroke-linecap", "round")
       .attr("marker-end", (d: any) => {

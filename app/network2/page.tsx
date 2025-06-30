@@ -22,7 +22,7 @@ export default function InfluenceNetworkPage() {
   const [type, setType] = useState("top");
   const [year, setYear] = useState("2023");
   const [topNum, setTopNum] = useState("10");
-  const [colorStyle, setColorStyle] = useState("continent");
+  const [colorStyle, setColorStyle] = useState("solid");
   const [net, setNet] = useState("atob");
   const [visibleLimit, setVisibleLimit] = useState(0.1);
 
@@ -81,6 +81,14 @@ export default function InfluenceNetworkPage() {
       "#FC4E2A98", 
       "#ff0000",
     ];
+    const solidbaseColors = [
+      "#03adfc20", 
+      "#03adfc60", 
+      "#03adfc90", 
+      "#03adfc95", 
+      "#03adfc98", 
+      "#03adfc",
+    ];
     const minValue = Math.min(...allValues);
     const maxValue = Math.max(...allValues);
 
@@ -92,8 +100,16 @@ export default function InfluenceNetworkPage() {
       .domain([minValue, maxValue])
       .range(baseColors);
 
+     const colorQuantileBySolid = scaleQuantile<string>()
+      .domain([minValue, maxValue])
+      .range(solidbaseColors);
+
     function getColorByInfluence(val: number): string {
       return colorQuantile(val);
+    }
+
+    function getColorBySolid(val: number): string {
+      return colorQuantileBySolid(val);
     }
     function hexToRgba(hex: string, alpha: number) {
       const r = parseInt(hex.slice(1, 3), 16);
@@ -136,6 +152,9 @@ export default function InfluenceNetworkPage() {
         }
       } else if (colorStyle === "influence") {
         baseColor = getColorByInfluence(val);
+      }
+      else if(colorStyle === "solid") {
+        baseColor = getColorBySolid(val);
       }
 
       // const opacity =
@@ -219,9 +238,13 @@ export default function InfluenceNetworkPage() {
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setColorStyle(e.target.value)}
           >
-            <option value="continent">Continent</option>
+            <option value="solid">Solid</option>
             <option value="influence">Influence Level</option>
+            <option value="continent">Continent</option>
+            
+            
           </select>
+    
 
           <input
             type="number"
