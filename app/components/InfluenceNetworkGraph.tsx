@@ -169,9 +169,12 @@ export default function InfluenceNetworkGraph({
     function forceGroupCentering(strength = 1.5) {
       return (alpha: number) => {
         nodes.forEach((node: any) => {
-          const center = groupCenters[node.group || "Other"];
-          node.vx += (center[0] - node.x) * strength * alpha;
-          node.vy += (center[1] - node.y) * strength * alpha;
+          const group = node.group || "Other";
+          const center = groupCenters[group];
+
+          const groupStrength = group === "Europe" ? strength * 0.4 : strength;
+          node.vx += (center[0] - node.x) * groupStrength * alpha;
+          node.vy += (center[1] - node.y) * groupStrength * alpha;
         });
       };
     }

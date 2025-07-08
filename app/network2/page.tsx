@@ -21,8 +21,8 @@ import { scaleQuantile } from "d3-scale";
 export default function InfluenceNetworkPage() {
   const [type, setType] = useState("top");
   const [year, setYear] = useState("2023");
-  const [topNum, setTopNum] = useState("10");
-  const [colorStyle, setColorStyle] = useState("solid");
+  const [topNum, setTopNum] = useState("100");
+  const [colorStyle, setColorStyle] = useState("influence");
   const [net, setNet] = useState("atob");
   const [visibleLimit, setVisibleLimit] = useState(0.1);
 
@@ -74,19 +74,19 @@ export default function InfluenceNetworkPage() {
       .filter((v) => typeof v === "number" && !isNaN(v));
 
     const baseColors = [
-      "#a4a4a420", 
-      "#9f9faf60", 
-      "#7c93d890", 
-      "#eabc4b95", 
-      "#FC4E2A98", 
+      "#9f9faf20",
+      "#03adfc30",
+      "#03adfc90",
+      "#ff0000",
+      "#ff0000",
       "#ff0000",
     ];
     const solidbaseColors = [
-      "#03adfc20", 
-      "#03adfc60", 
-      "#03adfc90", 
-      "#03adfc95", 
-      "#03adfc98", 
+      "#03adfc20",
+      "#03adfc60",
+      "#03adfc90",
+      "#03adfc95",
+      "#03adfc98",
       "#03adfc",
     ];
     const minValue = Math.min(...allValues);
@@ -100,7 +100,7 @@ export default function InfluenceNetworkPage() {
       .domain([minValue, maxValue])
       .range(baseColors);
 
-     const colorQuantileBySolid = scaleQuantile<string>()
+    const colorQuantileBySolid = scaleQuantile<string>()
       .domain([minValue, maxValue])
       .range(solidbaseColors);
 
@@ -152,8 +152,7 @@ export default function InfluenceNetworkPage() {
         }
       } else if (colorStyle === "influence") {
         baseColor = getColorByInfluence(val);
-      }
-      else if(colorStyle === "solid") {
+      } else if (colorStyle === "solid") {
         baseColor = getColorBySolid(val);
       }
 
@@ -179,7 +178,12 @@ export default function InfluenceNetworkPage() {
       };
     });
 
-    return { nodes, links };
+    const connectedNodeIds = new Set(
+      links.flatMap((link) => [link.source, link.target])
+    );
+    const filteredNodes = nodes.filter((node) => connectedNodeIds.has(node.id));
+
+    return { nodes: filteredNodes, links };
   }, [year, topNum, type, visibleLimit, net, colorStyle]);
 
   return (
@@ -201,13 +205,14 @@ export default function InfluenceNetworkPage() {
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setTopNum(e.target.value)}
           >
+            <option value="100">100</option>
             <option value="10">10</option>
             <option value="15">15</option>
             <option value="20">20</option>
             <option value="25">25</option>
             <option value="30">30</option>
             <option value="50">50</option>
-            <option value="100">100</option>
+            
           </select>
 
           <select
@@ -238,21 +243,24 @@ export default function InfluenceNetworkPage() {
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setColorStyle(e.target.value)}
           >
-            <option value="solid">Solid</option>
             <option value="influence">Influence Level</option>
+            <option value="solid">Solid</option>
+            
             <option value="continent">Continent</option>
-            
-            
           </select>
-    
 
-          <input
-            type="number"
-            className="p-2 rounded border border-gray-500 w-[100px]"
-            placeholder="Visible Limit"
-            value={visibleLimit}
+           <select
+            className="p-2 rounded border border-gray-500"
             onChange={(e) => setVisibleLimit(Number(e.target.value))}
-          />
+          >
+            
+            <option value="0.2">0.2</option>
+            <option value="0.1">0.1</option>
+            <option value="0.15">0.15</option>            
+            <option value="0.25">0.25</option>
+            <option value="0.3">0.3</option>
+            <option value="0.35">0.35</option>
+          </select>
 
           <Link href="/">
             <span className="text-center bg-[#f0f0f0] p-2 rounded-lg">
