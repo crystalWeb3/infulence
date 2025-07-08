@@ -253,9 +253,8 @@ export default function InfluenceNetworkPage() {
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setVisibleLimit(Number(e.target.value))}
           >
-            
-            <option value="0.2">0.2</option>
             <option value="0.1">0.1</option>
+            <option value="0.2">0.2</option>            
             <option value="0.15">0.15</option>            
             <option value="0.25">0.25</option>
             <option value="0.3">0.3</option>
