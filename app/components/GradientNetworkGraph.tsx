@@ -101,8 +101,8 @@ export default function InfluenceNetworkGraph({
         typeof link.source === "object" ? (link.source as any).id : link.source;
       const targetId =
         typeof link.target === "object" ? (link.target as any).id : link.target;
-      const sourceCode = countryNameToCode[sourceId] || slugify(sourceId);
-      const targetCode = countryNameToCode[targetId] || slugify(targetId);
+      const sourceCode = countryNameToCode[sourceId];
+      const targetCode = countryNameToCode[targetId];
       const gradId = `grad-${sourceCode}-${targetCode}`;
       const grad = defs
         .append("linearGradient")
@@ -308,8 +308,8 @@ export default function InfluenceNetworkGraph({
       links.forEach((l) => {
         const s = l.source as any,
           t = l.target as any;
-        const sCode = countryNameToCode[s.id] || slugify(s.id);
-        const tCode = countryNameToCode[t.id] || slugify(t.id);
+        const sCode = countryNameToCode[s.id];
+        const tCode = countryNameToCode[t.id];
         d3.select(`#grad-${sCode}-${tCode}`)
           .attr("x1", s.x)
           .attr("y1", s.y)
