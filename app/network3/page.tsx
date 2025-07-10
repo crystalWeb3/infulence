@@ -18,13 +18,14 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { scaleQuantile } from "d3-scale";
 import WorldMapInfluenceNetwork from "../components/WorldMapInfluenceNetwork";
+import WorldMapGraphNetwork from "../components/WorldMapGraphNetwork";
 
 export default function InfluenceNetworkPage() {
   const [type, setType] = useState("top");
   const [year, setYear] = useState("2023");
-  const [topNum, setTopNum] = useState("10");
-  const [colorStyle, setColorStyle] = useState("continent");
-  const [net, setNet] = useState("atob");
+  const [topNum, setTopNum] = useState("100");
+  const [colorStyle, setColorStyle] = useState("gradient");
+  const [net, setNet] = useState("net");
   const [visibleLimit, setVisibleLimit] = useState(0.1);
 
   const influenceData: any[] = influenceDataRaw as any[];
@@ -183,13 +184,14 @@ export default function InfluenceNetworkPage() {
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setTopNum(e.target.value)}
           >
+              <option value="100">100</option>
             <option value="10">10</option>
             <option value="15">15</option>
             <option value="20">20</option>
             <option value="25">25</option>
             <option value="30">30</option>
             <option value="50">50</option>
-            <option value="100">100</option>
+          
           </select>
 
           <select
@@ -211,26 +213,40 @@ export default function InfluenceNetworkPage() {
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setNet(e.target.value)}
           >
+            <option value="net">Net influence</option>
             <option value="atob">Directed Dyadic Influence A</option>
             <option value="btoa">Directed Dyadic Influence B</option>
-            <option value="net">Net influence</option>
+            
           </select>
 
           <select
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setColorStyle(e.target.value)}
           >
-            <option value="continent">Continent</option>
-            <option value="influence">Influence Level</option>
+            <option value="gradient">Gradient</option>
+            {/* <option value="influence">Influence Level</option> */}
           </select>
 
+          <select
+            className="p-2 rounded border border-gray-500"
+            onChange={(e) => setVisibleLimit(Number(e.target.value))}
+          >
+            <option value="0.05">0.05</option>
+            <option value="0.1">0.1</option>
+            <option value="0.15">0.15</option>
+            <option value="0.2">0.2</option>
+            <option value="0.25">0.25</option>
+            <option value="0.3">0.3</option>
+            {/* <option value="influence">Influence Level</option> */}
+          </select>
+{/* 
           <input
             type="number"
             className="p-2 rounded border border-gray-500 w-[100px]"
             placeholder="Visible Limit"
             value={visibleLimit}
             onChange={(e) => setVisibleLimit(Number(e.target.value))}
-          />
+          /> */}
 
           <Link href="/">
             <span className="text-center bg-[#f0f0f0] p-2 rounded-lg">
@@ -241,7 +257,7 @@ export default function InfluenceNetworkPage() {
       </div>
 
       <div className="relative">
-        <WorldMapInfluenceNetwork  nodes={nodes} links={links} />
+        <WorldMapGraphNetwork  nodes={nodes} links={links} />
       </div>
     </main>
   );
