@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import * as d3 from "d3";
-import InfluenceNetwork3D from "./InfluenceNetwork3D";
+import InfluenceNetwork2D from "./InfluenceNetwork2D";
 import { getContinentByCountry } from "@/utils/getCountryGroup";
 
 // --- Types ---
@@ -221,7 +221,7 @@ export default function InfluenceNetworkForceParent({
 
   if (!layout) return <div>Loading layout...</div>;
   return (
-    <InfluenceNetwork3D
+    <InfluenceNetwork2D
       nodes={layout.nodes}
       links={layout.links}
       width={width}

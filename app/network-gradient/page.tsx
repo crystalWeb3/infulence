@@ -21,10 +21,10 @@ import { scaleQuantile } from "d3-scale";
 export default function InfluenceNetworkPage() {
   const [type, setType] = useState("top");
   const [year, setYear] = useState("2023");
-  const [topNum, setTopNum] = useState("100");
+  const [topNum, setTopNum] = useState("300");
   const [colorStyle, setColorStyle] = useState("gradient");
   const [net, setNet] = useState("net");
-  const [visibleLimit, setVisibleLimit] = useState(0.1);
+  const [visibleLimit, setVisibleLimit] = useState(0.01);
 
   const influenceData: any[] = influenceDataRaw as any[];
 

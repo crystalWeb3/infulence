@@ -7,6 +7,18 @@ type CountryData = {
   [yearKey: string]: string | number;
 };
 
+export function getAllCountries(year: number): { name: string; value: number }[] {
+  const key = `y_${year}`;
+  return (totalData as CountryData[])
+    .filter(d => d.country && d[key] !== undefined)
+    .map(d => ({
+      name: d.country,
+      value: d[key] as number,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+
 export function getTopCountries(
   year: number,
   topN: number = 30
