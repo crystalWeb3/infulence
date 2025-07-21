@@ -1,6 +1,6 @@
 "use client";
 
-import GradientNetworkGraph from "../components/GradientNetworkGraph";
+import InfluenceNetworkForceParent from "../../components/InfluenceNetworkForceParent";
 import influenceDataRaw from "@/data/influence2.json";
 
 import {
@@ -8,7 +8,7 @@ import {
   getNatoCountries,
   getBricsCountries,
   getCountriesByContinent,
-  getAllCountries
+  getAllCountries,
 } from "@/utils/getTopCountries";
 import {
   getContinentByCountry,
@@ -382,8 +382,12 @@ export default function InfluenceNetworkPageWebGL() {
         )}
       </div>
 
-      <div className="relative">
-        <GradientNetworkGraph allview={type} nodes={nodes} links={links} />
+      <div className="relative w-full h-screen">
+        <InfluenceNetworkForceParent
+          allview={type}
+          nodes={nodes}
+          links={links}
+        />
       </div>
     </main>
   );

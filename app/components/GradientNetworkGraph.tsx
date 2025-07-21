@@ -32,23 +32,23 @@ export default function InfluenceNetworkGraph({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const slugify = (str: string) => str.replace(/\s+/g, "-").toLowerCase();
 
-  function downloadSVG() {
-    if (!svgRef.current) return;
-    const svgElement = svgRef.current;
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svgElement);
-    const svgBlob = new Blob(['<?xml version="1.0"?>\r\n' + source], {
-      type: "image/svg+xml;charset=utf-8",
-    });
-    const url = URL.createObjectURL(svgBlob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "influence_network.svg";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+  // function downloadSVG() {
+  //   if (!svgRef.current) return;
+  //   const svgElement = svgRef.current;
+  //   const serializer = new XMLSerializer();
+  //   const source = serializer.serializeToString(svgElement);
+  //   const svgBlob = new Blob(['<?xml version="1.0"?>\r\n' + source], {
+  //     type: "image/svg+xml;charset=utf-8",
+  //   });
+  //   const url = URL.createObjectURL(svgBlob);
+  //   const a = document.createElement("a");
+  //   a.href = url;
+  //   a.download = "influence_network.svg";
+  //   document.body.appendChild(a);
+  //   a.click();
+  //   document.body.removeChild(a);
+  //   URL.revokeObjectURL(url);
+  // }
 
   useEffect(() => {
     if (!originalNodes.length || !originalLinks.length) return;
@@ -334,12 +334,12 @@ export default function InfluenceNetworkGraph({
     <div className="relative w-full">
       <svg ref={svgRef} className="fixed top-0 left-0 w-full h-full z-0" />
       <div ref={tooltipRef} className="absolute z-10" />
-      <button
+      {/* <button
         onClick={downloadSVG}
         className="absolute top-4 right-4 z-20 bg-blue-500 text-white px-4 py-2 rounded"
       >
         Download SVG
-      </button>
+      </button> */}
     </div>
   );
 }
