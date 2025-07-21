@@ -8,31 +8,81 @@ import {
   getNatoCountries,
   getBricsCountries,
   getCountriesByContinent,
+  getAllCountries
 } from "@/utils/getTopCountries";
 import {
   getContinentByCountry,
   getCountryGroup,
 } from "@/utils/getCountryGroup";
+import Select from "react-select";
+import type { MultiValue } from "react-select";
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { scaleQuantile } from "d3-scale";
 
-export default function InfluenceNetworkPage() {
-  const [type, setType] = useState("top");
-  const [year, setYear] = useState("2023");
-  const [topNum, setTopNum] = useState("300");
-  const [colorStyle, setColorStyle] = useState("gradient");
-  const [net, setNet] = useState("net");
-  const [visibleLimit, setVisibleLimit] = useState(0.01);
+const MAX_DISPLAY = 2; // Show only first 2 selected
 
-  const influenceData: any[] = influenceDataRaw as any[];
+const VISIBLE_LIMIT_OPTIONS = [
+  { value: "over_0.1", label: "Over 0.1" },
+  { value: "over_0.2", label: "Over 0.2" },
+  { value: "over_0.15", label: "Over 0.15" },
+  { value: "over_0.25", label: "Over 0.25" },
+  { value: "over_0.3", label: "Over 0.3" },
+  { value: "over_0.35", label: "Over 0.35" },
+  { value: "below_0.02", label: "Below 0.02 (very low)" },
+  { value: "0.02_0.1", label: "0.02-0.1 (low)" },
+  { value: "0.1_0.25", label: "0.1-0.25 (moderate)" },
+  { value: "0.25_0.5", label: "0.25-0.5 (high)" },
+  { value: "0.5_up", label: "0.5 and above (very high)" },
+];
+
+export default function InfluenceNetworkPageWebGL() {
+  const [type, setType] = useState("all");
+  const [year, setYear] = useState("2023");
+  const [topNum, setTopNum] = useState("200");
+  const [colorStyle] = useState("gradient");
+  const [showCountryFilters, setShowCountryFilters] = useState(false);
+  const [net, setNet] = useState("net");
+  const [visibleLimit, setVisibleLimit] = useState(
+    VISIBLE_LIMIT_OPTIONS[0].value
+  );
+
+  const [countryA, setCountryA] = useState<
+    MultiValue<{ label: string; value: string }>
+  >([]); // Influencer
+  const [countryB, setCountryB] = useState<
+    MultiValue<{ label: string; value: string }>
+  >([]); // Receiver
+
+  const influenceData = influenceDataRaw as any[];
+
+  let allcountries = getAllCountries(Number(year));
+
+  const countryOptions = allcountries.map((d) => ({
+    label: d.name,
+    value: d.name,
+  }));
 
   const { nodes, links } = useMemo(() => {
-    let countries = [];
-    let countriesNames = [];
+    // 1. Direction-agnostic keys
+    let influencerField = "a_first";
+    let receiverField = "a_second";
+    let b = "a_";
+    if (net === "btoa") {
+      influencerField = "a_second";
+      receiverField = "a_first";
+      b = "b_";
+    } else if (net === "net") {
+      b = "c_";
+    }
+    const yearkey = b + year;
 
-    if (type === "top") {
+    // 2. Group/type selection
+    let countries = [];
+    if (type === "all") {
+      countries = getAllCountries(Number(year));
+    } else if (type === "top") {
       countries = getTopCountries(Number(year), Number(topNum));
     } else if (type === "nato") {
       countries = getNatoCountries(Number(year));
@@ -41,19 +91,42 @@ export default function InfluenceNetworkPage() {
     } else {
       countries = getCountriesByContinent(Number(year), type);
     }
-    countriesNames = countries.map((d) => d.name);
+    const countriesNames = countries.map((d) => d.name);
     const influenceMap = new Map(countries.map((d) => [d.name, d.value]));
 
-    const filteredData = influenceData.filter(
-      (d: any) =>
-        countriesNames.includes(d.a_first) &&
-        countriesNames.includes(d.a_second)
-    );
+    // 3. Build selected country sets
+    const selectedA = countryA.length ? countryA.map((c) => c.value) : null;
+    const selectedB = countryB.length ? countryB.map((c) => c.value) : null;
 
+    // 4. Main filter (directionally correct everywhere)
+    const filteredData = influenceData.filter((d: any) => {
+      // Only include if BOTH ends are in group/type
+      if (
+        !countriesNames.includes(d[influencerField]) ||
+        !countriesNames.includes(d[receiverField])
+      ) {
+        return false;
+      }
+      if (selectedA && selectedB) {
+        return (
+          selectedA.includes(d[influencerField]) &&
+          selectedB.includes(d[receiverField])
+        );
+      }
+      if (selectedA) {
+        return selectedA.includes(d[influencerField]);
+      }
+      if (selectedB) {
+        return selectedB.includes(d[receiverField]);
+      }
+      return true;
+    });
+
+    // 5. Build nodes from filtered links (directionally correct)
     const nodeSet = new Set<string>();
     filteredData.forEach((d: any) => {
-      nodeSet.add(d.a_first);
-      nodeSet.add(d.a_second);
+      nodeSet.add(d[influencerField]);
+      nodeSet.add(d[receiverField]);
     });
 
     const nodes = Array.from(nodeSet).map((id) => ({
@@ -63,12 +136,7 @@ export default function InfluenceNetworkPage() {
       continent: getContinentByCountry(id) || "Other",
     }));
 
-    let b = "a_";
-    if (net === "btoa") b = "b_";
-    if (net === "net") b = "c_";
-    const yearkey = b + year;
-
-    // Get min and max influence from full dataset
+    // 6. Color logic (unchanged)
     const allValues = influenceData
       .map((d: any) => d[yearkey])
       .filter((v) => typeof v === "number" && !isNaN(v));
@@ -92,10 +160,6 @@ export default function InfluenceNetworkPage() {
     const minValue = Math.min(...allValues);
     const maxValue = Math.max(...allValues);
 
-    const logMin = Math.log(minValue + 1e-6); // avoid log(0)
-    const logMax = Math.log(maxValue);
-    const logBucketSize = (logMax - logMin) / baseColors.length;
-
     const colorQuantile = scaleQuantile<string>()
       .domain([minValue, maxValue])
       .range(baseColors);
@@ -107,27 +171,58 @@ export default function InfluenceNetworkPage() {
     function getColorByInfluence(val: number): string {
       return colorQuantile(val);
     }
-
     function getColorBySolid(val: number): string {
       return colorQuantileBySolid(val);
     }
-    function hexToRgba(hex: string, alpha: number) {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+    interface PassVisibleLimitFn {
+      (val: number): boolean;
     }
 
-    const rawLinks = filteredData.filter(
-      (d: any) => d[yearkey] >= visibleLimit
-    );
+    interface VisibleLimitOptions {
+      value: string;
+      label: string;
+    }
+
+    const passVisibleLimit: PassVisibleLimitFn = (val: number): boolean => {
+      switch (visibleLimit) {
+        case "over_0.1":
+          return val > 0.1;
+        case "over_0.2":
+          return val > 0.2;
+        case "over_0.15":
+          return val > 0.15;
+        case "over_0.25":
+          return val > 0.25;
+        case "over_0.3":
+          return val > 0.3;
+        case "over_0.35":
+          return val > 0.35;
+        case "below_0.02":
+          return val < 0.02 && val > 0;
+        case "0.02_0.1":
+          return val >= 0.02 && val < 0.1;
+        case "0.1_0.25":
+          return val >= 0.1 && val < 0.25;
+        case "0.25_0.5":
+          return val >= 0.25 && val < 0.5;
+        case "0.5_up":
+          return val >= 0.5;
+        default:
+          return true;
+      }
+    };
+
+    const rawLinks = filteredData.filter((d: any) => {
+      const val = d[yearkey];
+      return typeof val === "number" && passVisibleLimit(val);
+    });
 
     const links = rawLinks.map((d: any) => {
       const val = d[yearkey];
       let baseColor = "#c4c4c4";
-
       if (colorStyle === "continent") {
-        const continent1 = getContinentByCountry(d.a_first);
+        const continent1 = getContinentByCountry(d[influencerField]);
         switch (continent1) {
           case "Asia":
             baseColor = "#00A86B";
@@ -155,25 +250,15 @@ export default function InfluenceNetworkPage() {
       } else if (colorStyle === "solid") {
         baseColor = getColorBySolid(val);
       }
-
-      // const opacity =
-      //   val < (maxValue - minValue) / 3
-      //     ? 0.8
-      //     : val < ((maxValue - minValue) * 2) / 3
-      //     ? 0.9
-      //     : 1.0;
-
-      // const color =
-      //   colorStyle === "influence" ? hexToRgba(baseColor, opacity) : baseColor;
-
       return {
-        source: d.a_first,
-        target: d.a_second,
+        source: d[influencerField],
+        target: d[receiverField],
         value: val,
         color: baseColor,
         group:
-          getCountryGroup(d.a_first) === getCountryGroup(d.a_second)
-            ? getCountryGroup(d.a_first)
+          getCountryGroup(d[influencerField]) ===
+          getCountryGroup(d[receiverField])
+            ? getCountryGroup(d[influencerField])
             : "Mixed",
       };
     });
@@ -184,15 +269,17 @@ export default function InfluenceNetworkPage() {
     const filteredNodes = nodes.filter((node) => connectedNodeIds.has(node.id));
 
     return { nodes: filteredNodes, links };
-  }, [year, topNum, type, visibleLimit, net, colorStyle]);
+  }, [year, countryA, countryB, topNum, type, visibleLimit, net, colorStyle]);
 
   return (
     <main>
-      <div className="bg-[#a0a0a0] rounded-lg ml-3 p-1 shadow-lg absolute top-[10px] z-10">
-        <span className="flex flex-wrap gap-2 items-center justify-center">
+      <div className="w-full flex flex-col gap-1 p-1 bg-[#a0a0a0] rounded-lg shadow-lg absolute left-0 z-10">
+        {/* First Row: Settings, now left-aligned */}
+        <div className="flex flex-wrap gap-1 items-center justify-start w-full">
           <select
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setYear(e.target.value)}
+            value={year}
           >
             <option value="2023">2023</option>
             <option value="2010">2010</option>
@@ -200,25 +287,28 @@ export default function InfluenceNetworkPage() {
             <option value="1980">1980</option>
             <option value="1965">1965</option>
           </select>
-
-          <select
-            className="p-2 rounded border border-gray-500"
-            onChange={(e) => setTopNum(e.target.value)}
-          >
-            <option value="100">100</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25">25</option>
-            <option value="30">30</option>
-            <option value="50">50</option>
-            
-          </select>
-
+          {type === "top" && (
+            <select
+              className="p-2 rounded border border-gray-500"
+              onChange={(e) => setTopNum(e.target.value)}
+              value={topNum}
+            >
+              <option value="200">200</option>
+              <option value="100">100</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="50">50</option>
+            </select>
+          )}
           <select
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setType(e.target.value)}
+            value={type}
           >
+            <option value="all">All Countries</option>
             <option value="top">Top Countries</option>
             <option value="nato">Nato</option>
             <option value="brics">BRICS</option>
@@ -229,45 +319,67 @@ export default function InfluenceNetworkPage() {
             <option value="Africa">Africa</option>
             <option value="Oceania">Oceania</option>
           </select>
-
           <select
             className="p-2 rounded border border-gray-500"
             onChange={(e) => setNet(e.target.value)}
+            value={net}
           >
             <option value="net">Net influence</option>
-            <option value="atob">Directed Dyadic Influence A</option>
-            <option value="btoa">Directed Dyadic Influence B</option>
-            
+            <option value="atob">Directed Dyadic Influence</option>
+            {/* <option value="btoa">Directed Dyadic Influence B</option> */}
           </select>
-
           <select
             className="p-2 rounded border border-gray-500"
-            onChange={(e) => setColorStyle(e.target.value)}
+            onChange={(e) => setVisibleLimit(e.target.value)}
+            value={visibleLimit}
           >
-            <option value="influence">Influence Level</option>
-            <option value="solid">Solid</option>
-            
-            <option value="continent">Continent</option>
+            {VISIBLE_LIMIT_OPTIONS.map((opt) => (
+              <option value={opt.value} key={opt.value}>
+                {opt.label}
+              </option>
+            ))}
           </select>
-
-           <select
-            className="p-2 rounded border border-gray-500"
-            onChange={(e) => setVisibleLimit(Number(e.target.value))}
+          <button
+            className="text-center bg-[#f47272] text-white p-2 rounded-lg cursor-pointer"
+            onClick={() => setShowCountryFilters((prev) => !prev)}
           >
-            <option value="0.1">0.1</option>
-            <option value="0.2">0.2</option>            
-            <option value="0.15">0.15</option>            
-            <option value="0.25">0.25</option>
-            <option value="0.3">0.3</option>
-            <option value="0.35">0.35</option>
-          </select>
-
+            {showCountryFilters
+              ? "Hide Country Filters"
+              : "Show Country Filters"}
+          </button>
           <Link href="/">
-            <span className="text-center bg-[#f0f0f0] p-2 rounded-lg">
+            <span className="text-center bg-[#f0f0f0] p-2 rounded-lg cursor-pointer">
               Back to Home
             </span>
           </Link>
-        </span>
+        </div>
+
+        {showCountryFilters && (
+          <div className="grid grid-cols-2 gap-1 w-full mt-1">
+            <div>
+              <Select
+                options={countryOptions}
+                value={countryA}
+                onChange={setCountryA}
+                isMulti
+                placeholder="Influencer(s)"
+                className="w-full"
+                isClearable
+              />
+            </div>
+            <div>
+              <Select
+                options={countryOptions}
+                value={countryB}
+                onChange={setCountryB}
+                isMulti
+                placeholder="Receiver(s)"
+                className="w-full"
+                isClearable
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="relative">
