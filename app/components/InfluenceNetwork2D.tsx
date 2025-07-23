@@ -152,7 +152,14 @@ const InfluenceNetwork2D: React.FC<Props> = ({
       target: NodeType;
     }[] = [];
 
-    // --- Draw links ---
+    function getLinkOpacity(value: number) {
+      const maxLinkValue = 0.3;
+      const minLinkValue = 0.01;
+      
+      const scaled = (value - minLinkValue) / (maxLinkValue - minLinkValue);
+      return scaled * 0.9 + 0.1;
+    }
+    
     links.forEach((link) => {
       const source = nodes.find((n) => n.id === link.source);
       const target = nodes.find((n) => n.id === link.target);
@@ -189,7 +196,7 @@ const InfluenceNetwork2D: React.FC<Props> = ({
       const material = new THREE.MeshBasicMaterial({
         vertexColors: true,
         transparent: true,
-        opacity: 0.9,
+        opacity: getLinkOpacity(link.value),
         side: THREE.DoubleSide,
         depthWrite: false,
       });
