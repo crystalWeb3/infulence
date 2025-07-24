@@ -128,9 +128,14 @@ export default function ChordHierarchyPage() {
 
       console.log("Net Matrix:", netMatrix);
 
+      console.log("Net Matrix for nodes:", netMatrix);
+      console.log("Labels for net matrix:", allNodes);
       return { matrix: netMatrix, labels: allNodes };
     }
 
+    
+
+    
     return {
       matrix,
       labels: allNodes,
