@@ -6,15 +6,16 @@ import { chordDirected } from "d3-chord";
 import { useEffect, useRef } from "react";
 import { countryNameToCode } from "@/utils/countryCodes";
 import { countryNameToColor } from "@/utils/countryColors"; // NEW IMPORT
+import { getContinentByCountry } from "@/utils/getCountryGroup";
 
-const powerToRegion: Record<string, string> = {
-  "United States of America": "Americas",
-  "Russian Federation": "Europe",
-  China: "Asia",
-  France: "Europe",
-  Germany: "Europe",
-  "United Kingdom": "Europe",
-};
+// const powerToRegion: Record<string, string> = {
+//   "United States of America": "Americas",
+//   "Russian Federation": "Europe",
+//   China: "Asia",
+//   France: "Europe",
+//   Germany: "Europe",
+//   "United Kingdom": "Europe",
+// };
 
 const regionColor: Record<string, string> = {
   Asia: "#FF0000", // Red
@@ -24,13 +25,6 @@ const regionColor: Record<string, string> = {
   Oceania: "#FBC02D", // Ochre (Yellow-ish)
 };
 
-const iconRegions: Record<string, string> = {
-  Asia: "https://www.svgrepo.com/show/173977/world-globe-asia-view.svg",
-  Europe: "https://www.svgrepo.com/show/352084/globe-europe.svg",
-  Africa: "https://www.svgrepo.com/show/369332/globe-africa.svg",
-  Oceania: "https://www.svgrepo.com/show/317084/continent.svg",
-  Americas: "https://www.svgrepo.com/show/399370/earth-america.svg",
-};
 
 interface Props {
   matrix: number[][];
@@ -59,18 +53,18 @@ export default function ChordDiagram2({ matrix, labels, year, type }: Props) {
   };
 
   useEffect(() => {
-    const width = 800;
-    const height = 800;
+    const width = 1200;
+    const height = 1200;
     const totalInfluence = matrix.flat().reduce((a, b) => a + b, 0);
     let scale = d3.scaleLinear().domain([0, 200]).range([100, 400]);
-    if(type === "net") {
+    if (type === "net") {
       scale = d3.scaleLinear().domain([0, 150]).range([100, 400]);
     }
 
     const innerRadius = scale(totalInfluence);
 
-    console.log("Total Influence:", totalInfluence);
-    console.log("Inner Radius:", innerRadius);
+    // console.log("Total Influence:", totalInfluence);
+    // console.log("Inner Radius:", innerRadius);
     const outerRadius = innerRadius + 10;
 
     const svg = d3
@@ -94,10 +88,7 @@ export default function ChordDiagram2({ matrix, labels, year, type }: Props) {
       .style("font-size", "14px")
       .style("z-index", "1000")
       .style("opacity", 0);
-
-    console.log("Matrix:", matrix);
-    console.log("Labels:", labels);
-
+ 
     // console.log("type:", type);
     // if (type === "net") {
     //   for (let i = 0; i < matrix.length; i++) {
@@ -118,8 +109,9 @@ export default function ChordDiagram2({ matrix, labels, year, type }: Props) {
     const group = svg.append("g").selectAll("g").data(chords.groups).join("g");
 
     const getColor = (name: string): string => {
-      if (regionColor[name]) return regionColor[name];
-      const region = powerToRegion[name];
+      if (regionColor[name]) return regionColor[name]; // for region nodes
+      const region = getContinentByCountry(name); // for all countries
+   
       return regionColor[region] || "#c4c4c4";
     };
 
