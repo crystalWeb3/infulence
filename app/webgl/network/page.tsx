@@ -21,7 +21,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { scaleQuantile } from "d3-scale";
 
-const MAX_DISPLAY = 2; // Show only first 2 selected
+const MAX_DISPLAY = 2;
 
 const VISIBLE_LIMIT_OPTIONS = [
   { value: "over_0.1", label: "Over 0.1" },
@@ -50,10 +50,10 @@ export default function InfluenceNetworkPageWebGL() {
 
   const [countryA, setCountryA] = useState<
     MultiValue<{ label: string; value: string }>
-  >([]); // Influencer
+  >([]); 
   const [countryB, setCountryB] = useState<
     MultiValue<{ label: string; value: string }>
-  >([]); // Receiver
+  >([]); 
 
   const influenceData = influenceDataRaw as any[];
 
@@ -64,8 +64,7 @@ export default function InfluenceNetworkPageWebGL() {
     value: d.name,
   }));
 
-  const { nodes, links } = useMemo(() => {
-    // 1. Direction-agnostic keys
+  const { nodes, links } = useMemo(() => {    
     let influencerField = "a_first";
     let receiverField = "a_second";
     let b = "a_";
@@ -77,8 +76,7 @@ export default function InfluenceNetworkPageWebGL() {
       b = "c_";
     }
     const yearkey = b + year;
-
-    // 2. Group/type selection
+    
     let countries = [];
     if (type === "all") {
       countries = getAllCountries(Number(year));
