@@ -1,4 +1,3 @@
-// utils/getCountryGroup.ts
 
 const brics = new Set([
   "Brazil",
@@ -86,10 +85,8 @@ const CONTINENTS: Record<string, string[]> = {
     "St. Lucia", "Sahrawi Arab Dem Rep"
 
   ],
-  NorthAmerica: [
-    "United States of America", "Canada", "Mexico", "Cuba", "Guatemala", "Honduras", "Panama", "Jamaica"
-  ],
-  SouthAmerica: [
+  Americas: [
+    "United States of America", "Canada", "Mexico", "Cuba", "Guatemala", "Honduras", "Panama", "Jamaica",
     "Brazil", "Argentina", "Colombia", "Chile", "Peru", "Venezuela; Bolivarian Republic", "Ecuador", "Bolivia",
     "Paraguay", "Uruguay", "Guyana", "Suriname", "French Guiana",
     "Falkland Islands", "Puerto Rico"

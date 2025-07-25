@@ -6,7 +6,7 @@ import Select from "react-select";
 import influenceDataRawJsonRaw from "@/data/influence2.json";
 const influenceDataRawJson: Array<any> = Array.isArray(influenceDataRawJsonRaw) ? influenceDataRawJsonRaw : [];
 import regionMap from "@/data/regionMap.json";
-import { getContinentByCountry } from "@/utils/getCountryGroup";
+import { getContinentByCountry } from "@/utils/getCountryGroupChord";
 import { getAllCountries } from "@/utils/getTopCountries";
 
 const ChordDiagram = dynamic(() => import("@/app/components/ChordDiagram2"), {
